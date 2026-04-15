@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bulldozer Growth Plan</title>
+<link rel="icon" type="image/png" href="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a3c2/6992f0e6f5a7844c8fb1a5df_favicon-bulldozer-2024.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bk:#0A0A0A;--bk2:#141414;--bk3:#1E1E1E;
+  --neon:#DDFF56;--wh:#F5F5F3;
+  --sans:'Space Grotesk',-apple-system,sans-serif;
+  --mono:'Space Mono',monospace;
+}
+html,body{height:100%;overflow:hidden;font-family:var(--sans);-webkit-font-smoothing:antialiased;background:var(--bk)}
+
+.mag{display:flex;height:100vh;transition:transform .65s cubic-bezier(.25,.1,.25,1)}
+.pg{width:100vw;height:100vh;flex-shrink:0;overflow:hidden;position:relative}
+
+/* NAV — default = WHITE text (for dark slides) */
+.nav-dots{position:fixed;bottom:20px;left:10vw;right:10vw;display:flex;gap:0.3vw;z-index:100;transition:all .3s}
+.nav-dot{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.15);cursor:pointer;transition:all .35s;border:none;padding:0}
+.nav-dot.active{background:#FFFFFF}
+.pg-ctr{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:clamp(13px,1.0vw,26px);color:#FFFFFF;z-index:250;letter-spacing:.06em;transition:bottom .3s ease,color .3s}
+
+/* NAV — light = BLACK text (for white & white-textured slides) */
+body.nav-light .nav-dot{background:rgba(0,0,0,.12)}
+body.nav-light .nav-dot.active{background:#0A0A0A}
+body.nav-light .pg-ctr{color:#0A0A0A}
+.arr{position:fixed;top:50%;transform:translateY(-50%);z-index:100;width:40px;height:40px;border:none;background:rgba(255,255,255,.05);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;backdrop-filter:blur(6px)}
+.arr:hover{background:rgba(221,255,86,.12)}
+.arr svg{width:16px;height:16px}
+.arr-l{left:16px}.arr-r{right:16px}
+.arr.hidden{opacity:0;pointer-events:none}
+
+/* ANIMATIONS */
+@keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.pg[data-v="true"] .an{animation:fu .55s ease forwards}
+.pg[data-v="false"] .an{opacity:0}
+.an{opacity:0}
+.d1{animation-delay:.08s!important}.d2{animation-delay:.16s!important}.d3{animation-delay:.24s!important}
+.d4{animation-delay:.32s!important}.d5{animation-delay:.4s!important}.d6{animation-delay:.48s!important}
+.d7{animation-delay:.56s!important}.d8{animation-delay:.64s!important}
+
+/* ===========================
+   DARK TEXTURED BG
+   =========================== */
+.dk{
+  background:var(--bk);
+  background-image:url('assets/Cover_R2_black.png');
+  background-size:cover;
+  background-position:center;
+  color:var(--wh);
+}
+
+/* ===========================
+   WHITE TEXTURED BG (dividers)
+   =========================== */
+.lt{
+  background:#FFFFFF;
+  color:var(--bk);
+}
+.lt-tex{
+  background-color:#E8E4DE;
+  background-image:url('assets/Cover_R2_white.png');
+  background-size:cover;
+  background-position:center;
+  color:var(--bk);
+}
+
+/* ===========================
+   CROP MARKS — on ALL slides
+   Printer-style: two separate dashes per corner, NOT touching
+   =========================== */
+.pg .cm-tl,.pg .cm-tr,.pg .cm-bl,.pg .cm-br{position:absolute;z-index:5;pointer-events:none}
+.pg .cm-tl::before,.pg .cm-tl::after,
+.pg .cm-tr::before,.pg .cm-tr::after,
+.pg .cm-bl::before,.pg .cm-bl::after,
+.pg .cm-br::before,.pg .cm-br::after{content:'';position:absolute}
+
+/* TL: ┘ shape with gap — horizontal at bottom, vertical at right */
+.pg .cm-tl{top:2.5%;left:2.5%;width:1.4vw;height:1.4vw}
+.pg .cm-tl::before{width:calc(100% - 0.3vw);height:1.5px;bottom:0;left:0}
+.pg .cm-tl::after{width:1.5px;height:calc(100% - 0.3vw);top:0;right:0}
+
+/* TR: └ shape with gap */
+.pg .cm-tr{top:2.5%;right:2.5%;width:1.4vw;height:1.4vw}
+.pg .cm-tr::before{width:calc(100% - 0.3vw);height:1.5px;bottom:0;right:0}
+.pg .cm-tr::after{width:1.5px;height:calc(100% - 0.3vw);top:0;left:0}
+
+/* BL: ┐ shape with gap */
+.pg .cm-bl{bottom:2.5%;left:2.5%;width:1.4vw;height:1.4vw}
+.pg .cm-bl::before{width:calc(100% - 0.3vw);height:1.5px;top:0;left:0}
+.pg .cm-bl::after{width:1.5px;height:calc(100% - 0.3vw);bottom:0;right:0}
+
+/* BR: ┌ shape with gap */
+.pg .cm-br{bottom:2.5%;right:2.5%;width:1.4vw;height:1.4vw}
+.pg .cm-br::before{width:calc(100% - 0.3vw);height:1.5px;top:0;right:0}
+.pg .cm-br::after{width:1.5px;height:calc(100% - 0.3vw);bottom:0;left:0}
+
+/* Dark slides → NEON crop marks */
+.dk .cm-tl::before,.dk .cm-tl::after,
+.dk .cm-tr::before,.dk .cm-tr::after,
+.dk .cm-bl::before,.dk .cm-bl::after,
+.dk .cm-br::before,.dk .cm-br::after{background:var(--neon)}
+
+/* White slides (pure + textured) → BLACK crop marks */
+.lt .cm-tl::before,.lt .cm-tl::after,
+.lt .cm-tr::before,.lt .cm-tr::after,
+.lt .cm-bl::before,.lt .cm-bl::after,
+.lt .cm-br::before,.lt .cm-br::after{background:var(--bk)}
+
+/* ===========================
+   COLORED DOTS — on ALL slides
+   =========================== */
+.cdots{display:flex;gap:0.4vw;position:absolute;z-index:5}
+.cdots span{width:0.5vw;height:0.5vw;min-width:6px;min-height:6px;display:block}
+.cdots-bl{bottom:3%;left:calc(3% + 2vw)}
+.cdots-tr{top:3%;right:calc(3% + 2vw)}
+.cd1{background:#1A1A1A}.cd2{background:#3A5A2E}.cd3{background:var(--neon)}.cd4{background:#6B7A3A}
+
+/* Old divider-only .corner class — hide it */
+.corner{display:none}
+
+/* ===========================
+   UNIVERSAL PAGE TITLE (top-left, 5% margin)
+   =========================== */
+.pg-title{position:absolute;top:10%;left:10%;z-index:10;font-size:clamp(35px,4.38vw,62px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.pg-title.light{color:var(--wh)}
+.pg-title.center{left:50%;transform:translateX(-50%);text-align:center}
+.pg-title.dark{color:var(--bk)}
+.pg-title .pg-label{display:block;font-family:var(--mono);font-size:clamp(13px,0.96vw,22px);font-weight:400;letter-spacing:.15em;text-transform:uppercase;margin-bottom:0.6em;opacity:.5}
+.pg-title .pg-label-neon{display:block;font-family:var(--mono);font-size:clamp(13px,0.96vw,22px);font-weight:400;letter-spacing:.15em;text-transform:uppercase;margin-bottom:0.6em;color:var(--neon)}
+
+/* DECORATIVE GRAY BARS on dividers */
+.deco-bar{display:none}
+
+/* ===========================
+   LOGO
+   =========================== */
+.logo-dark{width:4vw;height:4vw;min-width:36px;min-height:36px;border-radius:10px;object-fit:contain}
+.logo-light{width:4vw;height:4vw;min-width:36px;min-height:36px;object-fit:contain}
+
+/* ===========================
+   P1 — COVER
+   =========================== */
+.p1{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14vh 10vw 8vh 10vw}
+.p1 .logo-wrap{margin-bottom:60px}
+.p1 h1{font-size:clamp(125px,17.5vw,227px);font-weight:700;line-height:1;letter-spacing:-.03em;color:var(--wh);margin-bottom:24px}
+.p1 .sub{font-size:clamp(20px,1.65vw,43px);font-weight:400;color:rgba(255,255,255,.5);letter-spacing:.02em}
+.p1 .footer{position:absolute;bottom:10%;display:flex;align-items:center;gap:10px;font-size:clamp(15px,1.19vw,31px);color:rgba(255,255,255,.4)}
+.p1 .footer img{width:2vw;height:2vw;min-width:18px;min-height:18px;border-radius:5px}
+
+/* ===========================
+   P2 — DISCLAIMER
+   =========================== */
+.p2{display:flex;flex-direction:column;justify-content:center;padding:17vh 10vw 8vh 10vw}
+.p2 .label{display:none}
+.p2 h2{display:none}
+.p2 .card{background:var(--bk3);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:2vh 2.5vw;width:100%}
+.p2 .card p{font-size:clamp(15px,1.27vw,32px);line-height:1.75;color:rgba(255,255,255,.6);margin-bottom:14px}
+.p2 .card p strong{color:var(--wh);font-weight:400}
+.p2 .card ul{margin-left:20px;font-size:clamp(15px,1.27vw,32px);line-height:1.75;color:rgba(255,255,255,.6);margin-bottom:14px}
+
+/* ===========================
+   DIVIDER PAGES
+   =========================== */
+.divider{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14vh 10vw 8vh 10vw;position:relative}
+.divider .logo-wrap{margin-bottom:20px}
+.divider h2{font-size:clamp(126px,18.25vw,250px);font-weight:700;line-height:.92;letter-spacing:-.04em}
+.divider .wm-tl{position:absolute;top:5%;left:6%;font-size:clamp(245px,31.5vw,455px);font-weight:700;color:rgba(0,0,0,.05);line-height:1;letter-spacing:-.04em}
+.divider .wm-br{position:absolute;bottom:-2%;right:6%;font-size:clamp(245px,31.5vw,455px);font-weight:700;color:rgba(0,0,0,.05);line-height:1;letter-spacing:-.04em}
+
+/* ===========================
+   MISSION PAGE
+   =========================== */
+.mission{display:flex;align-items:center;justify-content:center;text-align:center;padding:14vh 10vw 8vh 10vw}
+.mission p{font-size:clamp(41px,6.12vw,72px);font-weight:700;line-height:1.4;max-width:80vw;color:var(--wh)}
+.mission em{font-style:normal;color:var(--neon)}
+
+/* ===========================
+   TEAM PAGE
+   =========================== */
+.team{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14vh 10vw 8vh 10vw;gap:4vh}
+.team .label{display:none}
+.team h2{display:none}
+.team-cards{display:flex;gap:1.8vw;justify-content:center;align-items:stretch}
+.team-card{width:13vw;min-width:140px;background:rgba(255,255,255,.92);border-radius:12px 12px 12px 3px;padding:0;text-align:center;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07)}
+.team-card .avatar{width:100%;height:0;padding-bottom:110%;background:#E8E4DE;overflow:hidden;position:relative}
+.team-card .avatar img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:0;filter:grayscale(30%)}
+.team-card .card-info{padding:1.2vh 1vw 1.5vh;display:flex;flex-direction:column;gap:0.3vh}
+.team-card .name{font-size:clamp(12px,1.0vw,22px);font-weight:600;color:var(--bk);line-height:1.3}
+.team-card .role{font-size:clamp(10px,0.75vw,17px);color:rgba(0,0,0,.4);font-style:italic}
+
+/* ===========================
+   SERVICES PAGE
+   =========================== */
+.services{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14vh 10vw 8vh 10vw;gap:3vh}
+.svc-row{display:flex;gap:16px;justify-content:center}
+.svc-box{width:8vw;height:8vw;min-width:80px;min-height:80px;border:2px solid;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:clamp(13px,1.0vw,26px);font-weight:600;text-transform:capitalize}
+.svc-box svg{width:2.5vw;height:2.5vw;min-width:20px;min-height:20px}
+.svc-strategie{border-color:#8B9E5E;color:#8B9E5E}.svc-paid{border-color:#2D5F3F;color:#2D5F3F}
+.svc-seo{border-color:#4A9B9E;color:#4A9B9E}.svc-outbound{border-color:#5A8FA3;color:#5A8FA3}
+.svc-brand{border-color:#A67B5B;color:#A67B5B}.svc-content{border-color:#956D4F;color:#956D4F}
+.svc-data{border-color:#7A8FA3;color:#7A8FA3}.svc-ops{border-color:#6B5BA6;color:#6B5BA6}
+.services .divider-line{width:3px;height:40px;background:var(--neon);border-radius:2px}
+.services>.sub,.services>h2,.services>.desc,.services>.divider-line{display:none}
+
+/* ===========================
+   SECTORS PAGE
+   =========================== */
+.sectors{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:14vh 10vw 8vh 10vw;gap:3vh}
+.sectors>.label,.sectors>h2{display:none}
+.sectors .label{font-family:var(--mono);font-size:clamp(13px,1.0vw,26px);letter-spacing:.15em;text-transform:uppercase;color:rgba(0,0,0,.35)}
+.sectors h2{font-size:clamp(55px,7.88vw,90px);font-weight:700;letter-spacing:-.03em;text-align:center}
+.sectors-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2vw;width:100%}
+.sector-card{background:rgba(255,255,255,.85);border-radius:8px;padding:24px 20px;text-align:center}
+.sector-card h4{font-size:clamp(15px,1.27vw,32px);font-weight:600;margin-bottom:1.2vh;color:var(--bk);border-bottom:1px solid rgba(0,0,0,.08);padding-bottom:1vh}
+.sector-card .logos{display:flex;flex-wrap:wrap;gap:0.8vw 1vw;align-items:center;justify-content:flex-start}
+.sector-card .logos img{height:auto;width:clamp(75px,10.0vw,200px);max-height:3vh;opacity:.4;filter:grayscale(100%);object-fit:contain}
+.sector-card .logos span{font-size:clamp(11px,0.88vw,18px);color:rgba(0,0,0,.3);font-weight:500}
+
+/* ===========================
+   CONTENT PAGES (dark, 2-col: card + mockup)
+   =========================== */
+.content{display:flex;align-items:center;padding:17vh 10vw 8vh 10vw;gap:4%}
+.content .title{position:absolute;top:10%;left:10%;z-index:10;font-size:clamp(35px,4.38vw,62px);font-weight:700;color:var(--wh);letter-spacing:-.02em}
+.content .card{background:var(--bk3);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.5vh 2vw;width:52%;max-height:75vh;overflow-y:auto}
+.content .card h3{font-size:clamp(18px,1.45vw,37px);font-weight:700;color:var(--wh);margin-bottom:16px}
+.content .card .note{font-size:clamp(17px,1.36vw,36px);font-weight:700;color:var(--wh);margin-bottom:16px}
+.content .card p{font-size:clamp(15px,1.19vw,31px);line-height:1.7;color:rgba(255,255,255,.6);margin-bottom:12px}
+.content .card p strong{color:var(--wh);font-weight:400}
+.content .card p em{color:var(--neon);font-style:normal}
+.content .card ul{margin-left:18px;font-size:clamp(15px,1.19vw,31px);line-height:1.7;color:rgba(255,255,255,.6);margin-bottom:12px}
+.content .card li{margin-bottom:4px}
+.content .card li strong{color:var(--wh);font-weight:400}
+.content .card .score{font-family:var(--mono);font-size:clamp(15px,1.19vw,31px);color:var(--neon);margin-bottom:4px}
+.content .card .limits{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);font-size:clamp(13px,1.09vw,27px);color:rgba(255,255,255,.35)}
+
+/* Tablet mockup */
+.mockup{position:relative;width:44%;display:flex;align-items:center;justify-content:center}
+.mockup-blob{position:absolute;width:70%;height:85%;background:var(--neon);border-radius:30% 70% 60% 40% / 50% 50% 50% 50%;bottom:-20px;right:-10px;z-index:1;filter:blur(0px)}
+.mockup-device{position:relative;z-index:2;width:90%;max-width:none;aspect-ratio:4/3;background:var(--bk3);border:10px solid #333;border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.mockup-bar{height:28px;background:#282828;display:flex;align-items:center;padding:0 12px;gap:6px}
+.mockup-bar span{width:8px;height:8px;border-radius:50%;background:#444}
+.mockup-screen{flex:1;background:#111;overflow:hidden}
+.mockup-screen img{width:100%;height:100%;object-fit:cover;object-position:top left}
+
+/* ===========================
+   FULL-WIDTH DARK PAGES
+   =========================== */
+.full-dark{display:flex;flex-direction:column;justify-content:center;padding:17vh 10vw 8vh 10vw}
+.full-dark>.label{display:none}
+.full-dark>h2{display:none}
+.full-dark .card{background:var(--bk3);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:2vh 2.5vw;width:100%}
+.full-dark .card p{font-size:clamp(15px,1.27vw,32px);line-height:1.75;color:rgba(255,255,255,.6);margin-bottom:14px}
+.full-dark .card p strong{color:var(--wh)}
+.full-dark .card ul{margin-left:20px;font-size:clamp(15px,1.27vw,32px);line-height:1.75;color:rgba(255,255,255,.6);margin-bottom:14px}
+.full-dark .card li{margin-bottom:4px}
+
+/* Glossaire layout */
+.glossaire{display:flex;align-items:center;padding:14vh 10vw 8vh 10vw;gap:5%}
+.glossaire .left{flex:1}
+.glossaire .right{flex:0;display:flex;justify-content:center}
+.glossaire .label{font-family:var(--mono);font-size:clamp(13px,1.09vw,27px);color:rgba(255,255,255,.35);letter-spacing:.1em;text-align:center;margin-bottom:8px}
+.glossaire h2{font-size:clamp(55px,7.88vw,90px);font-weight:700;letter-spacing:-.03em;text-align:center;margin-bottom:36px}
+.funnel{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:160px}
+.funnel-step{width:140px;padding:14px 0;text-align:center;font-family:var(--mono);font-size:clamp(13px,1.09vw,27px);font-weight:700;letter-spacing:.06em}
+.fn-top{background:var(--neon);color:var(--bk)}
+.fn-mid{background:#3A4A1E;color:var(--wh)}
+.fn-bot{background:var(--neon);color:var(--bk)}
+.fn-arr{color:var(--neon);font-size:clamp(20px,1.65vw,43px);line-height:1}
+.funnel-label{font-family:var(--mono);font-size:clamp(13px,0.91vw,23px);color:rgba(255,255,255,.3);letter-spacing:.15em;text-transform:uppercase;writing-mode:vertical-rl;margin-left:8px}
+
+/* CTVP */
+.ctvp{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14vh 10vw 8vh 10vw;gap:3vh}
+.ctvp .label{font-family:var(--mono);font-size:clamp(13px,1.09vw,27px);color:rgba(255,255,255,.35);letter-spacing:.1em}
+.ctvp h2{font-size:clamp(55px,7.88vw,90px);font-weight:700;letter-spacing:-.03em}
+.ctvp-diagram{display:flex;align-items:center;gap:40px;margin-top:20px}
+.ctvp-budget{background:#3A4A1E;color:var(--wh);padding:20px 24px;font-family:var(--mono);font-size:clamp(15px,1.19vw,31px);text-align:center;line-height:1.6}
+.ctvp-budget strong{color:var(--neon);display:block;font-size:clamp(17px,1.36vw,36px)}
+.ctvp-flow{display:flex;flex-direction:column;gap:12px;text-align:left;font-size:clamp(15px,1.27vw,32px);color:rgba(255,255,255,.55);line-height:1.6}
+.ctvp-flow strong{color:var(--neon)}
+
+/* ===========================
+   FILMSTRIP THUMBNAIL BAR
+   =========================== */
+.filmstrip-zone{position:fixed;bottom:0;left:0;right:0;height:80px;z-index:200}
+.filmstrip{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.92);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.08);padding:10px 1.5vw;display:flex;gap:0.4vw;align-items:center;overflow-x:auto;z-index:201;transform:translateY(100%);transition:transform .3s ease;-ms-overflow-style:none;scrollbar-width:none}
+.filmstrip::-webkit-scrollbar{display:none}
+.filmstrip.show{transform:translateY(0)}
+.fs-thumb{flex-shrink:0;width:calc((100vw - 3vw - 15 * 0.4vw) / 16);height:calc((100vw - 3vw - 15 * 0.4vw) / 16 * 9 / 16);border-radius:4px;cursor:pointer;border:2px solid transparent;transition:all .2s;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:clamp(10px,0.62vw,15px);letter-spacing:.06em;text-transform:uppercase;position:relative;overflow:hidden}
+.fs-thumb.dk-th{background:#1E1E1E;color:rgba(255,255,255,.5)}
+.fs-thumb.lt-th{background:#E8E4DE;color:rgba(0,0,0,.5)}
+.fs-thumb.neon-th{background:var(--neon);color:var(--bk);font-weight:700}
+.fs-thumb:hover{border-color:rgba(221,255,86,.4);transform:scale(1.06)}
+.fs-thumb.active{border-color:var(--neon);box-shadow:0 0 12px rgba(221,255,86,.2)}
+.fs-num{position:absolute;top:3px;left:5px;font-size:clamp(13px,0.74vw,18px);opacity:.4}
+
+/* Preview tooltip on hover */
+.fs-thumb .fs-preview{display:none;position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);width:240px;height:135px;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;font-size:clamp(13px,1.0vw,26px);color:rgba(255,255,255,.4);pointer-events:none}
+.fs-thumb:hover .fs-preview{display:flex}
+
+/* ===========================
+   DOWNLOAD PDF BUTTON
+   =========================== */
+.dl-btn{position:fixed;top:8.5vh;right:2.5vw;z-index:250;display:flex;flex-direction:row-reverse;align-items:center;background:var(--neon);border:none;border-radius:100px;padding:0;cursor:pointer;transition:width .4s cubic-bezier(.25,.1,.25,1);font-family:var(--mono);overflow:hidden;height:clamp(40px,3.12vw,55px);width:clamp(40px,3.12vw,55px)}
+.dl-btn:hover{width:clamp(212px,16.25vw,287px);padding-left:1.2vw}
+.dl-btn .dl-icon{flex-shrink:0;width:clamp(40px,3.12vw,55px);height:clamp(40px,3.12vw,55px);display:flex;align-items:center;justify-content:center}
+.dl-btn .dl-icon svg{width:clamp(17px,1.25vw,22px);height:clamp(17px,1.25vw,22px);stroke:var(--bk)}
+.dl-btn .dl-text{white-space:nowrap;font-size:clamp(10px,0.62vw,13px);letter-spacing:.08em;text-transform:uppercase;color:var(--bk);font-weight:700;opacity:0;transition:opacity .2s .15s}
+.dl-btn:hover .dl-text{opacity:1}
+
+/* Counter slide-up when filmstrip open — toggled via body.fs-open in JS */
+body.fs-open .pg-ctr{bottom:calc(24px + 80px + 16px)}
+
+/* Print styles for PDF export — landscape, FORCE backgrounds */
+@media print{
+  @page{size:landscape;margin:0}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
+  .nav-dots,.pg-ctr,.arr,.filmstrip,.filmstrip-zone,.dl-btn{display:none!important}
+  html,body{height:auto;overflow:visible;background:var(--bk)!important}
+  .mag{transform:none!important;flex-direction:column;height:auto}
+  .pg{width:100vw;height:100vh;flex-shrink:0;page-break-after:always;page-break-inside:avoid;break-after:page;overflow:hidden;position:relative}
+  .dk{background-color:var(--bk)!important;background-image:url('assets/Cover_R2_black.png')!important;background-size:cover!important}
+  .lt{background:#FFFFFF!important}
+  .lt-tex{background-color:#E8E4DE!important;background-image:url('assets/Cover_R2_white.png')!important;background-size:cover!important}
+  .an{opacity:1!important;animation:none!important;transform:none!important}
+  .pg[data-v="false"] .an{opacity:1!important}
+  .mockup-blob{display:none!important}
+  /* Ensure titles stay positioned correctly in print */
+  .pg-title{position:absolute!important;top:10%!important;left:10%!important;z-index:10!important;opacity:1!important}
+  .content .title{position:absolute!important;top:10%!important;left:10%!important;z-index:10!important;opacity:1!important}
+  .content .title span{opacity:1!important}
+  .content .card{margin-top:0!important}
+  /* Force all backgrounds in print */
+  .pg{position:relative!important;overflow:hidden!important}
+  [style*="background-image"]{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .content{padding:10vh 10vw!important}
+  .divider{padding:10vh 10vw!important}
+  .full-dark{padding:10vh 10vw!important}
+  .mission{padding:10vh 10vw!important}
+  .team{padding:10vh 10vw!important}
+  .services{padding:10vh 10vw!important}
+  .sectors{padding:10vh 10vw!important}
+  .glossaire{padding:10vh 10vw!important}
+  .ctvp{padding:10vh 10vw!important}
+  .p1{padding:10vh 10vw!important}
+  .p2{padding:10vh 10vw!important}
+}
+</style>
+</head>
+<body>
+
+<button class="arr arr-l hidden" id="aL" aria-label="Precedent"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+<button class="arr arr-r" id="aR" aria-label="Suivant"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+<div class="nav-dots" id="nd"></div>
+<div class="pg-ctr" id="pc">01 / 28</div>
+
+<!-- Filmstrip zone + thumbnails -->
+<div class="filmstrip-zone" id="fsZone"></div>
+<div class="filmstrip" id="fs"></div>
+
+<!-- Download as PDF -->
+<button class="dl-btn" id="dlBtn">
+  <span class="dl-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></span>
+  <span class="dl-text">Download PDF</span>
+</button>
+
+<div class="mag" id="mag">
+
+<!-- ========== P1 — COVER ========== -->
+<section class="pg p1 dk" data-v="true">
+  <div class="logo-wrap an">
+    <img class="logo-dark" src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="Bulldozer">
+  </div>
+  <h1 class="an d1">Growth plan</h1>
+  <p class="sub an d2">Coface <span style="color:var(--neon)">x</span> Bulldozer</p>
+  <div class="footer an d3">
+    <img src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="">
+    <span>bulldozer-collective.com</span>
+  </div>
+</section>
+
+<!-- ========== P2 — DISCLAIMER ========== -->
+<section class="pg p2 dk" data-v="false">
+  <div class="pg-title light"><span class="pg-label-neon">Bulldozer</span>Disclaimer</div>
+  <div class="label an">Bulldozer</div>
+  <h2 class="an d1">Disclaimer</h2>
+  <div class="card an d2">
+    <p><strong>Cette proposition pr&eacute;liminaire</strong> est bas&eacute;e sur les informations fournies par Coface et sur l'exp&eacute;rience de BULLDOZER dans des projets similaires, conform&eacute;ment &agrave; ses conditions g&eacute;n&eacute;rales.</p>
+    <p><strong>Les informations contenues dans ce document</strong> sont strictement confidentielles et destin&eacute;es uniquement &agrave; Coface. Ce document reste la propri&eacute;t&eacute; de BULLDOZER et ne peut &ecirc;tre transmis &agrave; des tiers sans son accord &eacute;crit pr&eacute;alable.</p>
+    <p><strong>Ce document a &eacute;t&eacute; pr&eacute;par&eacute;</strong> sur la base des &eacute;l&eacute;ments communiqu&eacute;s par Coface et ne constitue ni un audit complet, ni un engagement ferme de la part de BULLDOZER.</p>
+    <p><strong>Le budget indiqu&eacute;</strong> est une estimation indicative, susceptible d'&eacute;voluer apr&egrave;s &eacute;changes compl&eacute;mentaires sur le p&eacute;rim&egrave;tre, les conditions d'ex&eacute;cution et les engagements respectifs.</p>
+    <p><strong>Dans le cadre des tests de traction, les leads g&eacute;n&eacute;r&eacute;s :</strong></p>
+    <ul>
+      <li>ne constituent pas des clients,</li>
+      <li>ne sont pas partag&eacute;s avec le client,</li>
+      <li>ne sont pas cr&eacute;&eacute;s sous la marque du client.</li>
+    </ul>
+    <p>Ces tests visent uniquement &agrave; &eacute;valuer la traction potentielle dans un cadre exploratoire.</p>
+  </div>
+</section>
+
+<!-- ========== P3 — DIVIDER: BULLDOZER ========== -->
+<section class="pg lt divider" data-v="false">
+  <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
+  <div class="cdots cdots-bl"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span><span class="cd4"></span></div>
+  <div class="cdots cdots-tr"><span class="cd3"></span><span class="cd4"></span><span class="cd2"></span><span class="cd1"></span></div>
+  <div class="deco-bar deco-bar-1"></div>
+  <div class="wm-tl an">1</div>
+  <div class="logo-wrap an">
+    <img class="logo-light" src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="Bulldozer">
+  </div>
+  <h2 class="an d1">Bulldozer</h2>
+  <div class="wm-br an d2">1</div>
+</section>
+
+<!-- ========== P4 — MISSION ========== -->
+<section class="pg dk mission" data-v="false">
+  <div class="pg-title center light"><span class="pg-label-neon">Bulldozer</span>Notre mission</div>
+  <p class="an">Nous maximisons l'impact du marketing sur les revenus des entreprises gr&acirc;ce &agrave; des <em>approches full-funnel,</em> soutenues par les <em>meilleurs talents, technologies</em> et <em>m&eacute;thodologies.</em></p>
+</section>
+
+<!-- ========== P5 — TEAM ========== -->
+<section class="pg lt lt-tex team" data-v="false">
+  <div class="pg-title center dark"><span class="pg-label">Notre &eacute;quipe</span>Un collectif de <span style="background:var(--neon);color:var(--bk);padding:0.1em 0.4em;border-radius:4px;display:inline-block">300+</span> experts</div>
+  <div class="team-cards">
+    <div class="team-card an d1"><div class="avatar"><img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/69cb999975d3ab3d885e6756_6992f0e6f5a7844c8fb1aaab_enguerrand.png" alt="Enguerrand"></div><div class="card-info"><div class="name">Enguerrand Chalvon Demersay</div><div class="role">Co-Founder</div></div></div>
+    <div class="team-card an d2"><div class="avatar"><img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/69cb9982783741adc51e3a3a_69cb94278325e9eae99ab395_6992f0e6f5a7844c8fb1aaa8_charlotte_1.png" alt="Charlotte"></div><div class="card-info"><div class="name">Charlotte Nowak</div><div class="role">Content Manager</div></div></div>
+    <div class="team-card an d3"><div class="avatar"><img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/69cb9929916b4771a52c8e55_6992f0e6f5a7844c8fb1aaaa_jordan-chenevier_1.png" alt="Jordan"></div><div class="card-info"><div class="name">Jordan Chenevier-Truchet</div><div class="role">Co-Founder</div></div></div>
+    <div class="team-card an d4"><div class="avatar"><img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/69cb99e6ee666fd002c107c6_6992f0e6f5a7844c8fb1aaae_david-ansillon.png" alt="David"></div><div class="card-info"><div class="name">David Angillon</div><div class="role">Chief Operating Officer</div></div></div>
+    <div class="team-card an d5"><div class="avatar"><img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/69cb9a0931c043791060c88e_6992f0e6f5a7844c8fb1aaad_quentin_1.png" alt="Quentin"></div><div class="card-info"><div class="name">Quentin</div><div class="role">Head of People</div></div></div>
+  </div>
+</section>
+
+<!-- ========== P6 — SERVICES ========== -->
+<section class="pg dk services" data-v="false">
+  <div class="pg-title center light"><span class="pg-label-neon">Nos expertises</span>Le marketing qui g&eacute;n&egrave;re du revenu</div>
+  <div class="svc-row an">
+    <div class="svc-box svc-strategie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>Strat&eacute;gie</div>
+    <div class="svc-box svc-paid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5h4.5a1.5 1.5 0 010 3H9m0 0h5a1.5 1.5 0 010 3H9"/></svg>Paid</div>
+    <div class="svc-box svc-seo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h18M3 12h12M3 17h18"/></svg>SEO</div>
+    <div class="svc-box svc-outbound"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Outbound</div>
+    <div class="svc-box svc-brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Brand</div>
+    <div class="svc-box svc-content"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Content</div>
+    <div class="svc-box svc-data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>Data</div>
+    <div class="svc-box svc-ops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Ops</div>
+  </div>
+  <div class="divider-line an d2"></div>
+  <div class="sub an d3">Une approche data-driven et orient&eacute;e performance</div>
+  <h2 class="an d4">Le marketing qui g&eacute;n&egrave;re du revenu</h2>
+  <p class="desc an d5">Nous concevons des strat&eacute;gies marketing performantes pour une croissance durable.</p>
+</section>
+
+<!-- ========== P7 — SECTORS ========== -->
+<section class="pg lt lt-tex sectors" data-v="false">
+  <div class="pg-title center dark"><span class="pg-label">+450 Growth Playbook</span>Nos secteurs d'activit&eacute;s</div>
+  <div class="sectors-grid">
+    <div class="sector-card an d1"><h4>SaaS &amp; B2B</h4><div class="logos">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a836_aircall.svg" alt="Aircall">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/69cbc5fe4a25a8bf24f38935_payfit.svg" alt="PayFit">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a8b3_jahia.svg" alt="Jahia">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a8ad_pio.svg" alt="PIO">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a879_edflex.svg" alt="Edflex">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a3c2/6992f0e6f5a7844c8fb1a70e_adecco%20mini.svg" alt="Adecco">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a3c2/6992f0e6f5a7844c8fb1a70d_bsb%20mini.svg" alt="BSB">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a3c2/6992f0e6f5a7844c8fb1a6f5_betomorrow%20mini.svg" alt="BetoMorrow">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a80f_defacto.svg" alt="Defacto">
+    </div></div>
+    <div class="sector-card an d2"><h4>Medical &amp; Health</h4><div class="logos">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a876_orus.svg" alt="Orus">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a98d_Design%20sans%20titre.svg" alt="Scopics">
+      <span>PennyPet</span><span>RENOBEN</span><span>GreenSanit&eacute;</span>
+    </div></div>
+    <div class="sector-card an d3"><h4>Real Estate &amp; Construction</h4><div class="logos">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/69b3d00d1b90fcab9e600ba7_sunology.svg" alt="Sunology">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a3c2/6992f0e6f5a7844c8fb1a6f4_vertuoza%20mini.svg" alt="Vertuoza">
+      <span>Allowa</span><span>Suites</span><span>Nevo</span>
+    </div></div>
+    <div class="sector-card an d4"><h4>Finance &amp; Insurance</h4><div class="logos">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a878_delta%20dore.svg" alt="Delta Dore">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a820_alma.svg" alt="Alma">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a876_orus.svg" alt="Orus">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a8bb_atoa.svg" alt="Atoa">
+      <span>Mucha</span><span>Pennylane</span>
+    </div></div>
+    <div class="sector-card an d5"><h4>Retail &amp; Fashion</h4><div class="logos">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a80f_defacto.svg" alt="Defacto">
+      <span>Muratti</span><span>Beaugr&eacute;</span><span>Delacio</span><span>Lapparel</span><span>Ganduxe</span><span>Saint&eacute;</span>
+    </div></div>
+    <div class="sector-card an d6"><h4>Consulting &amp; Strategy</h4><div class="logos">
+      <span>Capsulent</span><span>F&amp;G</span><span>BigFly</span><span>LegalPlace</span><span>Focallure</span><span>Intescio</span><span>Nopillo</span>
+    </div></div>
+    <div class="sector-card an d7"><h4>Media &amp; Entertainment</h4><div class="logos">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a8ae_les%20others.svg" alt="Les Others">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/6992f0e6f5a7844c8fb1a8ad_pio.svg" alt="PIO">
+      <span>MCP</span><span>Groover</span><span>Forestia</span>
+    </div></div>
+    <div class="sector-card an d8"><h4>Service &amp; Others</h4><div class="logos">
+      <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a3c2/6992f0e6f5a7844c8fb1a6f3_orus%20mini.svg" alt="Orus">
+      <span>Chantips</span><span>ECAir</span><span>Pasilimeni</span><span>Look</span><span>Ceman&Co</span>
+    </div></div>
+  </div>
+</section>
+
+<!-- ========== P8 — DIVIDER: CONTEXTE ========== -->
+<section class="pg lt divider" data-v="false">
+  <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
+  <div class="cdots cdots-bl"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span><span class="cd4"></span></div>
+  <div class="cdots cdots-tr"><span class="cd3"></span><span class="cd4"></span><span class="cd2"></span><span class="cd1"></span></div>
+  <div class="deco-bar deco-bar-1"></div>
+  <div class="wm-tl an">2</div>
+  <div class="logo-wrap an">
+    <img class="logo-light" src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="Bulldozer">
+  </div>
+  <h2 class="an d1">Contexte</h2>
+  <div class="wm-br an d2">2</div>
+</section>
+
+<!-- ========== P9 — CONTEXTE DETAIL ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an">Contexte</div>
+  <div class="card an d1">
+    <h3>Entreprise</h3>
+    <p>Coface &mdash; cabinet de gestion de patrimoine (~40 pers., dont ~20 conseillers), B2C, multi-produits (PER, assurance-vie, d&eacute;fiscalisation, SCPI, Private Equity).</p>
+    <h3>Enjeux</h3>
+    <p>R&eacute;duire la d&eacute;pendance co&ucirc;teuse aux partenaires de leads (15-30 &euro;/lead, ~2 000/mois, conversion ~3 %) et d&eacute;velopper des canaux d'acquisition plus autonomes et rentables, notamment pour le pic T4 (d&eacute;fiscalisation).</p>
+    <h3>Challenges</h3>
+    <ul>
+      <li><strong>1. Acquisition :</strong> tester de nouveaux leviers (paid, outbound), mieux cibler les audiences cl&eacute;s et r&eacute;duire le co&ucirc;t d'acquisition.</li>
+      <li><strong>2. Structuration :</strong> automatiser les actions growth, suivre la performance et installer une strat&eacute;gie continue.</li>
+      <li><strong>3. Ex&eacute;cution :</strong> compenser le manque de ressources internes et lancer des actions rapides d&egrave;s T4.</li>
+    </ul>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_contexte.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P10 — BULLDOZER APPROACH ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an">Bulldozer</div>
+  <div class="card an d1">
+    <p>BULLDOZER accompagne Coface dans la construction d'une strat&eacute;gie Growth Marketing &eacute;quilibr&eacute;e entre performance imm&eacute;diate et croissance durable, articul&eacute;e autour de deux leviers :</p>
+    <p><strong>Demand Capture</strong> : Capter la demande existante. S'adresser aux audiences d&eacute;j&agrave; conscientes de leur besoin ou d'une solution, pour convertir plus et mieux.<br>&rarr; Impact rapide, mais volume limit&eacute;.</p>
+    <p><strong>Demand Generation</strong> : Cr&eacute;er la demande. Aller chercher les audiences non conscientes du probl&egrave;me ou du b&eacute;n&eacute;fice potentiel, afin de cr&eacute;er l'int&eacute;r&ecirc;t avant le besoin.<br>&rarr; 95 % du march&eacute;, levier cl&eacute; de croissance &agrave; long terme.</p>
+    <p><strong>Objectif final</strong><br>Aligner court terme et long terme &agrave; travers une feuille de route Growth 3 / 6 / 12 mois.</p>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_approche.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P11 — DIVIDER: PRE-AUDIT DEMAND CAPTURE ========== -->
+<section class="pg lt divider" data-v="false">
+  <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
+  <div class="cdots cdots-bl"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span><span class="cd4"></span></div>
+  <div class="cdots cdots-tr"><span class="cd3"></span><span class="cd4"></span><span class="cd2"></span><span class="cd1"></span></div>
+  <div class="deco-bar deco-bar-1"></div>
+  <div class="wm-tl an">3</div>
+  <div class="logo-wrap an">
+    <img class="logo-light" src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="Bulldozer">
+  </div>
+  <h2 class="an d1">Pr&eacute;-audit<br>Demand capture</h2>
+  <div class="wm-br an d2">3</div>
+</section>
+
+<!-- ========== P12 — DEMAND CAPTURE INTRO ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an"><span style="display:block;font-family:var(--mono);font-size:clamp(11px,0.88vw,20px);color:var(--neon);text-transform:uppercase;letter-spacing:.15em;font-weight:400;margin-bottom:0.5vh">Pr&eacute;-audit</span>Demand capture - demande existante</div>
+  <div class="card an d1">
+    <h3>Demand Capture &mdash; Coface</h3>
+    <p>Analyser comment Coface capte aujourd'hui la demande existante, c'est-&agrave;-dire les recherches, intentions et besoins d&eacute;j&agrave; exprim&eacute;s sur le march&eacute;, afin d'identifier les leviers les plus performants et les axes d'am&eacute;lioration.</p>
+    <h3>Objectif</h3>
+    <p>Mener un pr&eacute;-audit de la strat&eacute;gie Demand Capture pour le compte de Coface, afin de cartographier la performance actuelle sur les principaux canaux d'acquisition.</p>
+    <h3>P&eacute;rim&egrave;tre</h3>
+    <ul>
+      <li><strong>SEO</strong> &rarr; pr&eacute;-audit technique et s&eacute;mantique des contenus</li>
+      <li><strong>GEO</strong> (Generative Engine Optimization) &rarr; &eacute;valuation de la visibilit&eacute; de Coface dans les moteurs de recherche &agrave; IA</li>
+      <li><strong>SEA</strong> &rarr; analyse du positionnement et du ROI sur les requ&ecirc;tes payantes</li>
+      <li><strong>CRO / Funnel</strong> &rarr; observation du parcours de conversion (landing pages, CTA, formulaires)</li>
+    </ul>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_dc_intro.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P13 — GEO AUDIT ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an"><span style="display:block;font-family:var(--mono);font-size:clamp(11px,0.88vw,20px);color:var(--neon);text-transform:uppercase;letter-spacing:.15em;font-weight:400;margin-bottom:0.5vh">Pr&eacute;-audit</span>Demand capture GEO</div>
+  <div class="card an d1">
+    <div class="note">Note globale : 6,9 / 10</div>
+    <p>Bonne visibilit&eacute; globale (68 %) et base s&eacute;mantique solide, mais couverture encore partielle sur les requ&ecirc;tes cl&eacute;s &agrave; forte intention. Le potentiel de croissance est r&eacute;el avec une meilleure structuration et priorisation GEO.</p>
+    <ul>
+      <li><strong>Visibilit&eacute; : 6,5/10</strong> &mdash; Score correct, manque de top positions.</li>
+      <li><strong>Trafic : 6/10</strong> &mdash; Volume satisfaisant, conversion perfectible.</li>
+      <li><strong>Contenu : 7/10</strong> &mdash; Pertinent mais 60 % des requ&ecirc;tes strat&eacute;giques non trait&eacute;es.</li>
+      <li><strong>Technique : 7/10</strong> &mdash; Solide, balisage local &agrave; optimiser.</li>
+      <li><strong>Autorit&eacute; : 6,5/10</strong> &mdash; Derri&egrave;re SGPB et BNP Paribas.</li>
+      <li><strong>Opportunit&eacute;s : 8/10</strong> &mdash; Fort potentiel sur &laquo; expatri&eacute;s &raquo;, &laquo; entrepreneurs &raquo;, &laquo; gestion internationale &raquo;.</li>
+    </ul>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_geo.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P14 — SEO AUDIT ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an"><span style="display:block;font-family:var(--mono);font-size:clamp(11px,0.88vw,20px);color:var(--neon);text-transform:uppercase;letter-spacing:.15em;font-weight:400;margin-bottom:0.5vh">Pr&eacute;-audit</span>Demand capture SEO</div>
+  <div class="card an d1">
+    <div class="note">Note globale : 5,1 / 10</div>
+    <p>Bonne base SEO et forte pr&eacute;sence s&eacute;mantique, mais le trafic reste en de&ccedil;&agrave; du potentiel. Besoin d'un meilleur positionnement sur les requ&ecirc;tes cl&eacute;s et d'une structure plus performante.</p>
+    <ul>
+      <li><strong>Visibilit&eacute; : 7/10</strong> &mdash; Large couverture, peu de top positions.</li>
+      <li><strong>Trafic : 5/10</strong> &mdash; Rendement faible malgr&eacute; un bon volume de mots-cl&eacute;s.</li>
+      <li><strong>Contenu : 7,5/10</strong> &mdash; Pertinent et professionnel, manque de pages piliers cibl&eacute;es.</li>
+      <li><strong>Technique : 6,5/10</strong> &mdash; Architecture &agrave; fluidifier, maillage &agrave; renforcer.</li>
+      <li><strong>Autorit&eacute; : 4/10</strong> &mdash; Moins visible que les concurrents directs, netlinking &agrave; booster.</li>
+    </ul>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_seo.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P15 — SEA AUDIT ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an"><span style="display:block;font-family:var(--mono);font-size:clamp(11px,0.88vw,20px);color:var(--neon);text-transform:uppercase;letter-spacing:.15em;font-weight:400;margin-bottom:0.5vh">Pr&eacute;-audit</span>Demand capture SEA</div>
+  <div class="card an d1">
+    <div class="note">Note globale : 7,2 / 10</div>
+    <p>Campagnes bien structur&eacute;es et coh&eacute;rentes, mais trafic encore trop g&eacute;n&eacute;rique et manque de diff&eacute;renciation cr&eacute;ative.</p>
+    <ul>
+      <li><strong>Structure : 8/10</strong> &mdash; Segmentation claire, optimisation par objectif &agrave; renforcer.</li>
+      <li><strong>Mots-cl&eacute;s : 7/10</strong> &mdash; Bonne couverture, mais CPC &eacute;lev&eacute;s et peu de requ&ecirc;tes transactionnelles.</li>
+      <li><strong>Annonces : 7,5/10</strong> &mdash; Pertinentes mais peu test&eacute;es, manque d'impact dans les titres et CTA.</li>
+      <li><strong>Landing pages : 6,5/10</strong> &mdash; Exp&eacute;rience fluide, mais continuit&eacute; message / page &agrave; am&eacute;liorer.</li>
+      <li><strong>Performance : 7/10</strong> &mdash; CTR correct (~4 %), CPA perfectible, potentiel sur le Quality Score.</li>
+    </ul>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_sea.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P16 — CRO AUDIT ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an"><span style="display:block;font-family:var(--mono);font-size:clamp(11px,0.88vw,20px);color:var(--neon);text-transform:uppercase;letter-spacing:.15em;font-weight:400;margin-bottom:0.5vh">Pr&eacute;-audit</span>Demand capture CRO</div>
+  <div class="card an d1">
+    <div class="note">Note globale : 7,5 / 10</div>
+    <p>Excellente base CRO, claire, cr&eacute;dible et rassurante &mdash; mais encore trop &laquo; sage &raquo; pour maximiser les conversions.</p>
+    <ul>
+      <li><strong>Ergonomie : 8/10</strong> &mdash; Navigation fluide, design professionnel et rassurant.</li>
+      <li><strong>Message : 7/10</strong> &mdash; Promesse claire, mais manque d'un angle diff&eacute;renciateur et d'un b&eacute;n&eacute;fice imm&eacute;diat mesurable.</li>
+      <li><strong>CTA : 6,5/10</strong> &mdash; Bien plac&eacute;s et visibles, mais le wording manque d'impact.</li>
+      <li><strong>R&eacute;assurance : 8/10</strong> &mdash; Labels, avis Google et r&eacute;compenses renforcent la confiance.</li>
+    </ul>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_cro.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P17 — QUICK-WINS CRO ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an"><span style="display:block;font-family:var(--mono);font-size:clamp(11px,0.88vw,20px);color:var(--neon);text-transform:uppercase;letter-spacing:.15em;font-weight:400;margin-bottom:0.5vh">Pr&eacute;-audit</span>Quelques quick-wins en CRO</div>
+  <div class="card an d1">
+    <p><strong>1. CTA orient&eacute;s m&eacute;tier :</strong> Remplacer &laquo; Buy / Book a demo &raquo; par :<br>&bull; &laquo; Simuler mon PER &raquo;<br>&bull; &laquo; Calculer ma retraite &raquo;<br>&bull; &laquo; Voir un exemple de projet &raquo;<br>&rarr; Gain attendu : +10-15 % CTR CTA.</p>
+    <p><strong>2. Landing pages par usage</strong> &mdash; 1 page d&eacute;di&eacute;e par intention :<br>&bull; Retraite anticip&eacute;e cadres<br>&bull; D&eacute;fiscalisation chefs d'entreprise<br>&bull; Placement SCPI</p>
+    <p><strong>3. B&eacute;n&eacute;fices chiffr&eacute;s above the fold.</strong> Ajouter d&egrave;s le hero :<br>&bull; &laquo; &Eacute;conomisez jusqu'&agrave; 50 % d'imp&ocirc;ts &raquo;<br>&bull; &laquo; Placement moyen : 7,2 % / an &raquo;<br>&rarr; D&eacute;cision plus rapide c&ocirc;t&eacute; d&eacute;cideur.</p>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_quickwins.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P18 — DIVIDER: PRE-AUDIT DEMAND GEN ========== -->
+<section class="pg lt divider" data-v="false">
+  <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
+  <div class="cdots cdots-bl"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span><span class="cd4"></span></div>
+  <div class="cdots cdots-tr"><span class="cd3"></span><span class="cd4"></span><span class="cd2"></span><span class="cd1"></span></div>
+  <div class="deco-bar deco-bar-1"></div>
+  <div class="wm-tl an">4</div>
+  <div class="logo-wrap an">
+    <img class="logo-light" src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="Bulldozer">
+  </div>
+  <h2 class="an d1">Pr&eacute;-audit<br>Demand Gen</h2>
+  <div class="wm-br an d2">4</div>
+</section>
+
+<!-- ========== P19 — DEMAND GEN INTRO ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an"><span style="display:block;font-family:var(--mono);font-size:clamp(11px,0.88vw,20px);color:var(--neon);text-transform:uppercase;letter-spacing:.15em;font-weight:400;margin-bottom:0.5vh">Pr&eacute;-audit</span>Demand Gen - l'existant</div>
+  <div class="card an d1">
+    <h3>Demand Generation &mdash; Coface</h3>
+    <p>Analyser comment Coface peut cr&eacute;er et structurer la demande en amont, aupr&egrave;s de cibles qui ne recherchent pas encore activement une solution, mais rencontrent d&eacute;j&agrave; les probl&eacute;matiques que Coface r&eacute;sout.</p>
+    <h3>Objectif</h3>
+    <p>Structurer une approche Demand Gen pour Coface afin de cr&eacute;er la pr&eacute;f&eacute;rence de marque avant l'expression du besoin.</p>
+    <h3>Leviers activables</h3>
+    <ul>
+      <li><strong>ABM / ABX :</strong> Ciblage de comptes strat&eacute;giques avec des messages personnalis&eacute;s par usage et maturit&eacute;.</li>
+      <li><strong>SMA &amp; Paid Social :</strong> Campagnes de cr&eacute;ation de demande sur Meta, LinkedIn, orient&eacute;es probl&eacute;matiques m&eacute;tier.</li>
+      <li><strong>Content &amp; Thought Leadership :</strong> Contenus experts (use cases, d&eacute;mos) pour installer Coface comme r&eacute;f&eacute;rence.</li>
+      <li><strong>Funnel &amp; Nurturing :</strong> Parcours progressifs avec contenus interm&eacute;diaires pour faire monter la maturit&eacute;.</li>
+    </ul>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_dg_intro.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P20 — SMA META ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an"><span style="display:block;font-family:var(--mono);font-size:clamp(11px,0.88vw,20px);color:var(--neon);text-transform:uppercase;letter-spacing:.15em;font-weight:400;margin-bottom:0.5vh">Pr&eacute;-audit</span>Demand Gen - SMA (Meta)</div>
+  <div class="card an d1">
+    <div class="note">Note globale : 5,4 / 10</div>
+    <p>Bonne base SEO et dynamique positive, mais le trafic reste nettement sous le potentiel. Les requ&ecirc;tes business cl&eacute;s ne sont pas encore assez bien positionn&eacute;es.</p>
+    <ul>
+      <li><strong>Visibilit&eacute; : 6,5/10</strong> &mdash; Couverture large, mais trop peu de Top 10.</li>
+      <li><strong>Trafic : 5/10</strong> &mdash; 967 visites mensuelles, rendement faible vs potentiel march&eacute;.</li>
+      <li><strong>Contenu : 7/10</strong> &mdash; S&eacute;mantique solide, manque de pages piliers transactionnelles.</li>
+      <li><strong>Technique : 6/10</strong> &mdash; Base saine, maillage et structure &agrave; renforcer.</li>
+      <li><strong>Autorit&eacute; : 4,5/10</strong> &mdash; En retrait face aux leaders, netlinking insuffisant.</li>
+    </ul>
+    <div class="limits"><strong>Limites de l'analyse :</strong> R&eacute;sultats principalement ax&eacute;s sur l'analyse du march&eacute; US.</div>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_sma_meta.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P21 — SMA LINKEDIN ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an"><span style="display:block;font-family:var(--mono);font-size:clamp(11px,0.88vw,20px);color:var(--neon);text-transform:uppercase;letter-spacing:.15em;font-weight:400;margin-bottom:0.5vh">Pr&eacute;-audit</span>Demand Gen - SMA (LinkedIn)</div>
+  <div class="card an d1">
+    <div class="note">Note globale : 5,4 / 10</div>
+    <p>Bonne base SEO et dynamique positive, mais le trafic reste nettement sous le potentiel. Les requ&ecirc;tes business cl&eacute;s ne sont pas encore assez bien positionn&eacute;es.</p>
+    <ul>
+      <li><strong>Visibilit&eacute; : 6,5/10</strong> &mdash; Couverture large, mais trop peu de Top 10.</li>
+      <li><strong>Trafic : 5/10</strong> &mdash; 967 visites mensuelles, rendement faible vs potentiel march&eacute;.</li>
+      <li><strong>Contenu : 7/10</strong> &mdash; S&eacute;mantique solide, manque de pages piliers transactionnelles.</li>
+      <li><strong>Technique : 6/10</strong> &mdash; Base saine, maillage et structure &agrave; renforcer.</li>
+      <li><strong>Autorit&eacute; : 4,5/10</strong> &mdash; En retrait face aux leaders, netlinking insuffisant.</li>
+    </ul>
+    <div class="limits"><strong>Limites de l'analyse :</strong> R&eacute;sultats bas&eacute;s sur analyse march&eacute; US. Contexte B2C fran&ccedil;ais plus limit&eacute; sur LinkedIn.</div>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_sma_linkedin.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P22 — DIVIDER: TDT DEMAND GEN ========== -->
+<section class="pg lt divider" data-v="false">
+  <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
+  <div class="cdots cdots-bl"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span><span class="cd4"></span></div>
+  <div class="cdots cdots-tr"><span class="cd3"></span><span class="cd4"></span><span class="cd2"></span><span class="cd1"></span></div>
+  <div class="deco-bar deco-bar-1"></div>
+  <div class="wm-tl an">5</div>
+  <div class="logo-wrap an">
+    <img class="logo-light" src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="Bulldozer">
+  </div>
+  <h2 class="an d1">TDT<br>Demand Gen</h2>
+  <div class="wm-br an d2">5</div>
+</section>
+
+<!-- ========== P23 — TDT DETAIL ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an"><span style="display:block;font-family:var(--mono);font-size:clamp(11px,0.88vw,20px);color:var(--neon);text-transform:uppercase;letter-spacing:.15em;font-weight:400;margin-bottom:0.5vh">Test de traction</span>Demand gen - g&eacute;n&eacute;ration de demande</div>
+  <div class="card an d1">
+    <h3>Demand Generation &mdash; Coface</h3>
+    <p>Analyser comment Coface peut cr&eacute;er et stimuler la demande aupr&egrave;s d'audiences non conscientes du probl&egrave;me ou de la solution, afin de valider l'attractivit&eacute; des propositions de valeur et la pertinence des messages.</p>
+    <h3>P&eacute;rim&egrave;tre</h3>
+    <ul>
+      <li><strong>Audience :</strong> valider la ou les bonnes audiences</li>
+      <li><strong>Message :</strong> test de plusieurs propositions de valeur</li>
+      <li><strong>Co&ucirc;t d'acquisition :</strong> mesure des premiers co&ucirc;ts par lead</li>
+      <li><strong>Dur&eacute;e :</strong> 3 &agrave; 5 jours</li>
+      <li><strong>Budget :</strong> 1 500 &agrave; 2 500 &euro;</li>
+      <li><strong>&Eacute;quipe :</strong> 1 Growth Manager + 1 Designer</li>
+    </ul>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_tdt_detail.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P24 — DIVIDER: METHODOLOGIE ========== -->
+<section class="pg lt divider" data-v="false">
+  <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
+  <div class="cdots cdots-bl"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span><span class="cd4"></span></div>
+  <div class="cdots cdots-tr"><span class="cd3"></span><span class="cd4"></span><span class="cd2"></span><span class="cd1"></span></div>
+  <div class="deco-bar deco-bar-1"></div>
+  <div class="wm-tl an">6</div>
+  <div class="logo-wrap an">
+    <img class="logo-light" src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="Bulldozer">
+  </div>
+  <h2 class="an d1">M&eacute;thodologie</h2>
+  <div class="wm-br an d2">6</div>
+</section>
+
+<!-- ========== P25 — RAPPEL DES REGLES ========== -->
+<section class="pg dk full-dark" data-v="false">
+  <div class="pg-title light"><span class="pg-label-neon">Bulldozer</span>Rappel des r&egrave;gles du test</div>
+  <div class="label an">Bulldozer</div>
+  <h2 class="an d1">Rappel des r&egrave;gles du test</h2>
+  <div class="card an d2">
+    <p><strong>Objectif</strong><br>Valider le potentiel du march&eacute;, identifier les profils r&eacute;ceptifs et tester la m&eacute;canique d'activation avant tout passage &agrave; l'&eacute;chelle. Ce n'est pas une op&eacute;ration commerciale, mais un <strong>test de validation business.</strong></p>
+    <p><strong>Points d'attention</strong></p>
+    <ul>
+      <li>Aucune notori&eacute;t&eacute; exploit&eacute;e</li>
+      <li>Aucun argument de marque utilis&eacute;</li>
+      <li>Nos outils employ&eacute;s</li>
+      <li>Nos assets crea, tech utilis&eacute;s</li>
+    </ul>
+    <p><strong>Sur les leads</strong></p>
+    <ul>
+      <li>Les leads ne sont pas exploitables commercialement</li>
+      <li>La loi nous interdit de transmettre des leads n'ayant pas explicitement valid&eacute; le consentement</li>
+      <li>Ils servent uniquement &agrave; valider les hypoth&egrave;ses marketing</li>
+    </ul>
+    <p>En r&eacute;sum&eacute; : on ne fait pas de la comm', on regarde si une collaboration ensemble aurait du sens.</p>
+  </div>
+</section>
+
+<!-- ========== P26 — GLOSSAIRE ========== -->
+<section class="pg dk" data-v="false" style="display:flex;flex-direction:column;padding:17vh 10vw 8vh 10vw">
+  <div class="pg-title light"><span class="pg-label-neon">Test de traction</span>Glossaire</div>
+  <div style="margin-top:9vh;display:flex;gap:4%;align-items:stretch;flex:1">
+    <!-- Left: definitions card -->
+    <div class="an d1" style="flex:1;background:var(--bk3);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:3vh 2.5vw;display:flex;flex-direction:column;justify-content:center;gap:2vh">
+      <div><div style="font-size:clamp(11px,0.9vw,20px);font-weight:700;color:var(--wh)">Lead</div><div style="font-size:clamp(9px,0.7vw,16px);color:rgba(255,255,255,.5);line-height:1.5">On capte des informations (formulaire, t&eacute;l&eacute;chargement...) qui permettent d'identifier une personne avec une marque d'int&eacute;r&ecirc;t.</div></div>
+      <div><div style="font-size:clamp(11px,0.9vw,20px);font-weight:700;color:var(--wh)">MQL (Marketing Qualified Lead)</div><div style="font-size:clamp(9px,0.7vw,16px);color:rgba(255,255,255,.5);line-height:1.5">Ce lead correspond &agrave; la cible d&eacute;finie (intention, urgence) et montre un int&eacute;r&ecirc;t r&eacute;el.</div></div>
+      <div><div style="font-size:clamp(11px,0.9vw,20px);font-weight:700;color:var(--wh)">SQL (Sales Qualified Lead)</div><div style="font-size:clamp(9px,0.7vw,16px);color:rgba(255,255,255,.5);line-height:1.5">Ce MQL a &eacute;t&eacute; valid&eacute; par un commercial comme &eacute;tant pertinent.</div></div>
+      <div><div style="font-size:clamp(11px,0.9vw,20px);font-weight:700;color:var(--wh)">Opportunit&eacute;</div><div style="font-size:clamp(9px,0.7vw,16px);color:rgba(255,255,255,.5);line-height:1.5">Une proposition commerciale a &eacute;t&eacute; faite (devis, offre, appel d'offre...).</div></div>
+      <div><div style="font-size:clamp(11px,0.9vw,20px);font-weight:700;color:var(--wh)">Vente</div><div style="font-size:clamp(9px,0.7vw,16px);color:rgba(255,255,255,.5);line-height:1.5">Le prospect est devenu client suite &agrave; la signature ou &agrave; l'achat.</div></div>
+    </div>
+    <!-- Right: funnel visual from PDF -->
+    <div class="an d2" style="width:35%;display:flex;align-items:center;justify-content:center">
+      <img src="assets/visual_funnel.png" alt="Funnel" style="max-width:100%;max-height:70vh;object-fit:contain">
+    </div>
+  </div>
+</section>
+
+<!-- ========== P27 — METHODOLOGIE CTVP ========== -->
+<section class="pg dk" data-v="false" style="display:flex;flex-direction:column;padding:17vh 10vw 8vh 10vw">
+  <div class="pg-title light"><span class="pg-label-neon">Test de traction</span>M&eacute;thodologie CTVP</div>
+  <div style="margin-top:9vh;flex:1;display:flex;align-items:center;justify-content:center">
+    <img class="an d1" src="assets/visual_ctvp.png" alt="CTVP" style="max-width:100%;max-height:65vh;object-fit:contain">
+  </div>
+</section>
+
+<!-- ========== P28 — DIVIDER: RESULTATS & ANALYSES ========== -->
+<section class="pg lt divider" data-v="false">
+  <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
+  <div class="cdots cdots-bl"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span><span class="cd4"></span></div>
+  <div class="cdots cdots-tr"><span class="cd3"></span><span class="cd4"></span><span class="cd2"></span><span class="cd1"></span></div>
+  <div class="deco-bar deco-bar-1"></div>
+  <div class="wm-tl an">7</div>
+  <div class="logo-wrap an">
+    <img class="logo-light" src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="Bulldozer">
+  </div>
+  <h2 class="an d1">R&eacute;sultats<br>&amp; analyses</h2>
+  <div class="wm-br an d2">7</div>
+</section>
+
+<!-- ========== P29 — PLAN STRATEGIQUE GROWTH ========== -->
+<section class="pg dk" data-v="false" style="display:flex;flex-direction:column;padding:17vh 10vw 8vh 10vw">
+  <div class="pg-title light"><span class="pg-label-neon">Plan strat&eacute;gique</span>Growth Coface</div>
+  <div style="display:flex;gap:3%;align-items:stretch;flex:1">
+    <div class="an d1" style="flex:1;background:var(--bk3);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:3vh 3vw;display:flex;flex-direction:column;gap:2vh;overflow-y:auto">
+      <div>
+        <div style="font-size:clamp(14px,1.2vw,28px);font-weight:700;color:var(--neon);margin-bottom:0.5vh">Phase 1 &mdash; Oct. &rarr; D&eacute;c.</div>
+        <div style="font-size:clamp(12px,1vw,24px);font-weight:600;color:var(--wh);margin-bottom:0.8vh">Activation &amp; apprentissage rapide</div>
+        <ul style="font-size:clamp(11px,0.9vw,21px);line-height:1.55;color:rgba(255,255,255,.55);margin-left:1.5vw">
+          <li>Relancer campagnes Google (Search + PMax) sur requ&ecirc;tes forte intention</li>
+          <li>Lancer Meta &amp; LinkedIn avec 2-3 messages cl&eacute;s valid&eacute;s</li>
+          <li>Suivi unifi&eacute; (tracking, qualification, feedback)</li>
+          <li>Ajuster CPA et taux MQL/SQL &agrave; chaque sprint</li>
+        </ul>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:1.5vh">
+        <div style="font-size:clamp(14px,1.2vw,28px);font-weight:700;color:var(--neon);margin-bottom:0.5vh">Phase 2 &mdash; F&eacute;v. &rarr; Avr.</div>
+        <div style="font-size:clamp(12px,1vw,24px);font-weight:600;color:var(--wh);margin-bottom:0.8vh">Structuration &amp; consolidation organique</div>
+        <ul style="font-size:clamp(11px,0.9vw,21px);line-height:1.55;color:rgba(255,255,255,.55);margin-left:1.5vw">
+          <li>Audit SEO &amp; GEO complet (technique + s&eacute;mantique + autorit&eacute;)</li>
+          <li>Plan de contenus &laquo; piliers &raquo; pour visibilit&eacute; organique</li>
+          <li>Optimiser CRO sur landing pages cl&eacute;s (A/B test, CTAs)</li>
+        </ul>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:1.5vh">
+        <div style="font-size:clamp(14px,1.2vw,28px);font-weight:700;color:var(--neon);margin-bottom:0.5vh">Phase 3 &mdash; Mai &rarr; &Eacute;t&eacute;</div>
+        <div style="font-size:clamp(12px,1vw,24px);font-weight:600;color:var(--wh);margin-bottom:0.8vh">Passage &agrave; l'&eacute;chelle &amp; Machine ABX</div>
+        <ul style="font-size:clamp(11px,0.9vw,21px);line-height:1.55;color:rgba(255,255,255,.55);margin-left:1.5vw">
+          <li>D&eacute;ployer ABM sur LinkedIn, Meta &amp; Google</li>
+          <li>Unifier CRM + dashboards CPL/MQL/SQL cross-canal</li>
+          <li>Automatiser nurturing, retargeting, contenus perso</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Right: 3D cubes from PDF -->
+    <div class="an d2" style="width:30%;display:flex;align-items:center;justify-content:center">
+      <img src="assets/visual_plan_cubes.png" alt="Plan" style="max-width:100%;max-height:70vh;object-fit:contain">
+    </div>
+  </div>
+</section>
+
+<!-- ========== P30 — EQUIPE ========== -->
+<section class="pg dk" data-v="false" style="display:flex;flex-direction:column;padding:17vh 10vw 8vh 10vw">
+  <div class="pg-title light"><span class="pg-label-neon">&Eacute;quipe</span>Construction de l'&eacute;quipe</div>
+  <div style="margin-top:9vh;display:flex;gap:4%;align-items:stretch;flex:1">
+    <!-- Left: criteria card -->
+    <div class="an d1" style="flex:1;background:var(--bk3);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:3vh 2.5vw;display:flex;flex-direction:column;justify-content:center;gap:1.2vh">
+      <div style="font-size:clamp(11px,0.85vw,19px);font-weight:300;color:var(--neon);margin-bottom:0.3vh">Cinq crit&egrave;res cl&eacute;s pour construire une &eacute;quipe performante</div>
+      <ul style="font-size:clamp(9px,0.7vw,16px);line-height:1.6;color:rgba(255,255,255,.55);margin-left:1.2vw;display:flex;flex-direction:column;gap:1vh">
+        <li><span style="color:var(--wh);font-weight:600">Connaissance du march&eacute; et des audiences en moyenne 8 ans d'exp&eacute;rience</span> &rarr; compr&eacute;hension fine des march&eacute;s cibles et du comportement des utilisateurs.</li>
+        <li><span style="color:var(--wh);font-weight:600">Int&eacute;r&ecirc;t pour le sujet</span> &rarr; motivation r&eacute;elle et engagement personnel dans le projet.</li>
+        <li><span style="color:var(--wh);font-weight:600">Disponibilit&eacute;</span> &rarr; capacit&eacute; &agrave; s'investir pleinement selon les besoins de la mission.</li>
+        <li><span style="color:var(--wh);font-weight:600">Exp&eacute;rience av&eacute;r&eacute;e</span> &rarr; succ&egrave;s d&eacute;montr&eacute; sur des projets similaires.</li>
+        <li><span style="color:var(--wh);font-weight:600">Ma&icirc;trise technologique et m&eacute;thodologique</span> &rarr; expertise sur les outils et frameworks adapt&eacute;s.</li>
+      </ul>
+    </div>
+    <!-- Right: org chart with real photos -->
+    <div class="an d2" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh">
+      <!-- Business partner -->
+      <div style="text-align:center">
+        <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/69cb999975d3ab3d885e6756_6992f0e6f5a7844c8fb1aaab_enguerrand.png" style="width:5vw;height:5vw;min-width:50px;min-height:50px;border-radius:50%;object-fit:cover;border:3px solid var(--neon)" alt="PA">
+        <div style="font-weight:700;font-size:clamp(10px,0.85vw,19px);color:var(--wh);margin-top:0.5vh">Business partner</div>
+        <div style="font-size:clamp(9px,0.7vw,16px);color:rgba(255,255,255,.4)">Pierre-Arnaud Destremau</div>
+      </div>
+      <!-- Connector -->
+      <div style="width:2px;height:2vh;background:rgba(255,255,255,.1)"></div>
+      <!-- Head of Growth -->
+      <div style="text-align:center">
+        <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/69cb9a1cdda1bb69d7a005f2_6992f0e6f5a7844c8fb1aab2_eleana.png" style="width:4vw;height:4vw;min-width:40px;min-height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.15)" alt="HoG">
+        <div style="font-weight:700;font-size:clamp(10px,0.85vw,19px);color:var(--wh);margin-top:0.4vh">Head of Growth</div>
+        <div style="font-size:clamp(8px,0.6vw,14px);color:rgba(255,255,255,.35)">Lead and coordinate team</div>
+      </div>
+      <!-- Connector -->
+      <div style="width:2px;height:1.5vh;background:rgba(255,255,255,.1)"></div>
+      <!-- Team row -->
+      <div style="display:flex;gap:3vw;align-items:flex-start">
+        <div style="text-align:center">
+          <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/69cb9a32a0149f71874d5dc9_6992f0e6f5a7844c8fb1aab4_leo20lacoste.png" style="width:3.2vw;height:3.2vw;min-width:34px;min-height:34px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.1)" alt="">
+          <div style="font-size:clamp(9px,0.7vw,16px);font-weight:600;color:var(--wh);margin-top:0.3vh">Paid Manager</div>
+          <div style="font-size:clamp(8px,0.55vw,13px);color:rgba(255,255,255,.3)">Inbound &amp; Outbound</div>
+        </div>
+        <div style="text-align:center">
+          <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/69cb99e6ee666fd002c107c6_6992f0e6f5a7844c8fb1aaae_david-ansillon.png" style="width:3.2vw;height:3.2vw;min-width:34px;min-height:34px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.1)" alt="">
+          <div style="font-size:clamp(9px,0.7vw,16px);font-weight:600;color:var(--wh);margin-top:0.3vh">SEO Expert</div>
+          <div style="font-size:clamp(8px,0.55vw,13px);color:rgba(255,255,255,.3)">Audit &amp; content</div>
+        </div>
+        <div style="text-align:center">
+          <img src="https://cdn.prod.website-files.com/6992f0e6f5a7844c8fb1a36f/69cb9982783741adc51e3a3a_69cb94278325e9eae99ab395_6992f0e6f5a7844c8fb1aaa8_charlotte_1.png" style="width:3.2vw;height:3.2vw;min-width:34px;min-height:34px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.1)" alt="">
+          <div style="font-size:clamp(9px,0.7vw,16px);font-weight:600;color:var(--wh);margin-top:0.3vh">Designer</div>
+          <div style="font-size:clamp(8px,0.55vw,13px);color:rgba(255,255,255,.3)">Leverage content</div>
+        </div>
+      </div>
+      <p style="font-size:clamp(8px,0.55vw,13px);color:rgba(255,255,255,.2);margin-top:1vh;font-style:italic">*&Eacute;quipe fictive, construite avant le kick off</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P32 — SUIVI DE MISSION ========== -->
+<section class="pg dk content" data-v="false">
+  <div class="title an"><span style="display:block;font-family:var(--mono);font-size:clamp(11px,0.88vw,20px);color:var(--neon);text-transform:uppercase;letter-spacing:.15em;font-weight:400;margin-bottom:0.5vh">Accompagnement</span>Suivi de mission</div>
+  <div class="card an d1">
+    <h3>Communication</h3>
+    <ul>
+      <li><strong>Channel Slack d&eacute;di&eacute;</strong> &mdash; &eacute;changes quotidiens avec l'&eacute;quipe</li>
+      <li><strong>Synth&egrave;se hebdomadaire</strong> &mdash; r&eacute;sum&eacute; des actions et prochaines &eacute;tapes</li>
+    </ul>
+    <h3>Reviews</h3>
+    <ul>
+      <li><strong>Bimensuelle</strong> &mdash; point performance et ajustements strat&eacute;giques</li>
+      <li><strong>Mensuelle</strong> &mdash; bilan complet avec KPIs et recommandations</li>
+    </ul>
+    <h3>Tracking</h3>
+    <ul>
+      <li>Dashboard en temps r&eacute;el avec m&eacute;triques cl&eacute;s (CPL, MQL, SQL, CPA)</li>
+      <li>Attribution multi-touch pour comprendre le parcours de conversion</li>
+    </ul>
+    <h3>IA Bulldozer x &Eacute;tapes</h3>
+    <ul>
+      <li>Analyse automatis&eacute;e des performances par levier</li>
+      <li>Recommandations d'optimisation g&eacute;n&eacute;r&eacute;es par IA</li>
+      <li>Scoring pr&eacute;dictif des leads</li>
+      <li>Reporting consolid&eacute; cross-canal</li>
+    </ul>
+  </div>
+  <div class="mockup an d2">
+    <div class="mockup-blob"></div>
+    <div class="mockup-device">
+      <div class="mockup-bar"><span></span><span></span><span></span></div>
+      <div class="mockup-screen"><img src="assets/screen_suivi.png" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P33 — DIVIDER: PRICING ========== -->
+<section class="pg lt divider" data-v="false">
+  <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
+  <div class="cdots cdots-bl"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span><span class="cd4"></span></div>
+  <div class="cdots cdots-tr"><span class="cd3"></span><span class="cd4"></span><span class="cd2"></span><span class="cd1"></span></div>
+  <div class="deco-bar deco-bar-1"></div>
+  <div class="wm-tl an">8</div>
+  <div class="logo-wrap an">
+    <img class="logo-light" src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="Bulldozer">
+  </div>
+  <h2 class="an d1">Pricing</h2>
+  <div class="wm-br an d2">8</div>
+</section>
+
+<!-- ========== P34 — OFFRE GROWTH PLAN ========== -->
+<section class="pg dk full-dark" data-v="false">
+  <div class="pg-title light"><span class="pg-label-neon">Offre</span>Growth Plan &mdash; 3 mois</div>
+  <div class="label an">Offre</div>
+  <h2 class="an d1">OFFRE Growth Plan &mdash; 3 MOIS</h2>
+  <div class="card an d2" style="max-width:100%;overflow-x:auto">
+    <p><strong>Phase 1 : Build ABM (Dur&eacute;e : 6 mois)</strong></p>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;font-size:clamp(15px,1.19vw,31px);margin:12px 0 20px">
+      <div style="color:var(--neon);font-weight:600;border-bottom:1px solid rgba(255,255,255,.1);padding:8px 0">&Eacute;l&eacute;ment</div>
+      <div style="color:var(--neon);font-weight:600;border-bottom:1px solid rgba(255,255,255,.1);padding:8px 0;text-align:right">Setup initial</div>
+      <div style="color:var(--neon);font-weight:600;border-bottom:1px solid rgba(255,255,255,.1);padding:8px 0;text-align:right">Abonnement / mois</div>
+      <div style="color:var(--neon);font-weight:600;border-bottom:1px solid rgba(255,255,255,.1);padding:8px 0;text-align:right">Sous-total</div>
+      <div style="color:rgba(255,255,255,.6);padding:6px 0">Head of Growth</div><div style="color:rgba(255,255,255,.5);text-align:right;padding:6px 0">&mdash;</div><div style="color:rgba(255,255,255,.5);text-align:right;padding:6px 0">Coface &euro; HT</div><div style="color:var(--wh);text-align:right;padding:6px 0">Coface &euro; HT</div>
+      <div style="color:rgba(255,255,255,.6);padding:6px 0">Paid Manager</div><div style="color:rgba(255,255,255,.5);text-align:right;padding:6px 0">&mdash;</div><div style="color:rgba(255,255,255,.5);text-align:right;padding:6px 0">Coface &euro; HT</div><div style="color:var(--wh);text-align:right;padding:6px 0">Coface &euro; HT</div>
+      <div style="color:rgba(255,255,255,.6);padding:6px 0">SEO Expert</div><div style="color:rgba(255,255,255,.5);text-align:right;padding:6px 0">&mdash;</div><div style="color:rgba(255,255,255,.5);text-align:right;padding:6px 0">Coface &euro; HT</div><div style="color:var(--wh);text-align:right;padding:6px 0">Coface &euro; HT</div>
+      <div style="color:rgba(255,255,255,.6);padding:6px 0">Designer</div><div style="color:rgba(255,255,255,.5);text-align:right;padding:6px 0">&mdash;</div><div style="color:rgba(255,255,255,.5);text-align:right;padding:6px 0">Coface &euro; HT</div><div style="color:var(--wh);text-align:right;padding:6px 0">Coface &euro; HT</div>
+      <div style="color:rgba(255,255,255,.6);padding:6px 0">GTM Engineer</div><div style="color:rgba(255,255,255,.5);text-align:right;padding:6px 0">Coface &euro; HT</div><div style="color:rgba(255,255,255,.5);text-align:right;padding:6px 0">&mdash;</div><div style="color:var(--wh);text-align:right;padding:6px 0">Coface &euro; HT</div>
+      <div style="color:var(--neon);font-weight:700;padding:10px 0;border-top:1px solid rgba(255,255,255,.1)">TOTAL</div><div style="border-top:1px solid rgba(255,255,255,.1);padding:10px 0"></div><div style="border-top:1px solid rgba(255,255,255,.1);padding:10px 0"></div><div style="color:var(--neon);font-weight:700;text-align:right;border-top:1px solid rgba(255,255,255,.1);padding:10px 0">Coface &euro; HT</div>
+    </div>
+    <p style="font-size:clamp(13px,1.09vw,27px);color:rgba(255,255,255,.3)">*Note : engagement minimum de 3 mois. Budget m&eacute;dia non inclus.</p>
+  </div>
+</section>
+
+<!-- ========== P35 — VENTILATION DES COUTS ========== -->
+<section class="pg dk" data-v="false" style="display:flex;flex-direction:column;padding:17vh 10vw 8vh 10vw">
+  <div class="pg-title light"><span class="pg-label-neon">Pricing</span>Ventilation des co&ucirc;ts</div>
+  <!-- Legend top-right -->
+  <div class="an" style="position:absolute;top:10%;right:10%;font-size:clamp(9px,0.65vw,15px);color:rgba(255,255,255,.4)">
+    <div style="font-weight:700;margin-bottom:0.5vh">L&eacute;gende :</div>
+    <div style="display:flex;align-items:center;gap:0.4vw"><span style="width:10px;height:10px;border-radius:50%;background:#22C55E;display:inline-block"></span> Obligatoire</div>
+    <div style="display:flex;align-items:center;gap:0.4vw"><span style="width:10px;height:10px;border-radius:50%;background:#F59E0B;display:inline-block"></span> Recommand&eacute;</div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <table class="an d1" style="width:100%;border-collapse:collapse;font-size:clamp(11px,0.9vw,20px);color:rgba(255,255,255,.6)">
+      <thead>
+        <tr style="background:var(--neon);color:var(--bk)">
+          <th style="text-align:left;padding:1.2vh 1vw;font-weight:700">Phase</th>
+          <th style="text-align:center;padding:1.2vh 0.5vw;font-weight:700">Statut</th>
+          <th style="text-align:left;padding:1.2vh 1vw;font-weight:700">&Eacute;l&eacute;ment</th>
+          <th style="text-align:right;padding:1.2vh 1vw;font-weight:700">Mai</th>
+          <th style="text-align:right;padding:1.2vh 1vw;font-weight:700">Juin</th>
+          <th style="text-align:right;padding:1.2vh 1vw;font-weight:700">Juillet</th>
+          <th style="text-align:right;padding:1.2vh 1vw;font-weight:700">Sous-total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+          <td rowspan="5" style="padding:1.2vh 1vw;font-weight:700;vertical-align:middle;color:var(--wh)">Expertise Paid<br><span style="font-weight:400;color:rgba(255,255,255,.4)">SMA Meta</span></td>
+          <td style="text-align:center;padding:1vh 0.5vw"><span style="width:10px;height:10px;border-radius:50%;background:#22C55E;display:inline-block"></span></td>
+          <td style="padding:1vh 1vw">Pack LP (123 Renov)</td>
+          <td style="text-align:right;padding:1vh 1vw">1 500 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw">1 500 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw"></td>
+          <td style="text-align:right;padding:1vh 1vw;color:var(--neon);font-weight:600"></td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+          <td style="text-align:center;padding:1vh 0.5vw"><span style="width:10px;height:10px;border-radius:50%;background:#22C55E;display:inline-block"></span></td>
+          <td style="padding:1vh 1vw">Expert SMA Meta (ISO2C + 123 Renov)</td>
+          <td style="text-align:right;padding:1vh 1vw">1 500 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw">1 500 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw">1 500 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw;color:var(--neon);font-weight:600">4 500 &euro; HT</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+          <td style="text-align:center;padding:1vh 0.5vw"><span style="width:10px;height:10px;border-radius:50%;background:#22C55E;display:inline-block"></span></td>
+          <td style="padding:1vh 1vw">AI Creative Strategist</td>
+          <td style="text-align:right;padding:1vh 1vw">2 500 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw">900 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw">900 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw;color:var(--neon);font-weight:600">4 300 &euro; HT</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+          <td style="text-align:center;padding:1vh 0.5vw"><span style="width:10px;height:10px;border-radius:50%;background:#22C55E;display:inline-block"></span></td>
+          <td style="padding:1vh 1vw">AI Tools</td>
+          <td style="text-align:right;padding:1vh 1vw">150 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw">150 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw">150 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw;color:var(--neon);font-weight:600">450 &euro; HT</td>
+        </tr>
+        <tr style="background:rgba(221,255,86,.12);color:var(--wh);font-weight:700">
+          <td style="text-align:center;padding:1vh 0.5vw"></td>
+          <td style="padding:1vh 1vw">Sous-total</td>
+          <td style="text-align:right;padding:1vh 1vw">4 150 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw">2 550 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw">2 550 &euro; HT</td>
+          <td style="text-align:right;padding:1vh 1vw;color:var(--neon)">9 250 &euro; HT</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr style="background:var(--neon);color:var(--bk);font-weight:700">
+          <td colspan="3" style="padding:1.5vh 1vw;font-size:clamp(12px,1vw,22px)">Budget pr&eacute;visionnel total</td>
+          <td style="text-align:right;padding:1.5vh 1vw">4 150 &euro; HT</td>
+          <td style="text-align:right;padding:1.5vh 1vw">2 550 &euro; HT</td>
+          <td style="text-align:right;padding:1.5vh 1vw">2 550 &euro; HT</td>
+          <td style="text-align:right;padding:1.5vh 1vw;font-size:clamp(12px,1vw,22px)">9 250 &euro; HT</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</section>
+
+<!-- ========== P36 — PROJECTION FINANCIERE ========== -->
+<section class="pg dk" data-v="false" style="display:flex;flex-direction:column;padding:17vh 10vw 8vh 10vw">
+  <div class="pg-title light"><span class="pg-label-neon">Projections</span>Projection financi&egrave;re</div>
+  <div style="flex:1;display:flex;gap:4%;align-items:center">
+    <!-- Left: table -->
+    <div class="an d1" style="flex:1">
+      <table style="width:100%;border-collapse:collapse;font-size:clamp(11px,0.9vw,20px);color:rgba(255,255,255,.6)">
+        <thead>
+          <tr style="background:var(--neon);color:var(--bk)">
+            <th style="text-align:left;padding:1.2vh 1vw;font-weight:700">Variable</th>
+            <th style="text-align:right;padding:1.2vh 1vw;font-weight:700;color:#C2410C">H. pessimiste</th>
+            <th style="text-align:right;padding:1.2vh 1vw;font-weight:700;color:#16A34A">H. r&eacute;aliste</th>
+            <th style="text-align:right;padding:1.2vh 1vw;font-weight:700;color:#2563EB">H. optimiste</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:1vh 1vw;color:var(--wh)">Co&ucirc;t MQL</td><td style="text-align:right;padding:1vh 1vw">40 &euro; &rarr; 40 &euro;</td><td style="text-align:right;padding:1vh 1vw">40 &rarr; 25 &euro;</td><td style="text-align:right;padding:1vh 1vw">40 &euro; &rarr; 15 &euro;</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:1vh 1vw;color:var(--wh)">Conversion MQL &rarr; client</td><td style="text-align:right;padding:1vh 1vw">20 %</td><td style="text-align:right;padding:1vh 1vw">20 %</td><td style="text-align:right;padding:1vh 1vw">20 %</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:1vh 1vw;color:var(--wh)">Panier moyen / an</td><td style="text-align:right;padding:1vh 1vw">8 000 &euro;</td><td style="text-align:right;padding:1vh 1vw">8 000 &euro;</td><td style="text-align:right;padding:1vh 1vw">8 000 &euro;</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:1vh 1vw;color:var(--wh)">Dur&eacute;e de projection</td><td style="text-align:right;padding:1vh 1vw">12 mois</td><td style="text-align:right;padding:1vh 1vw">12 mois</td><td style="text-align:right;padding:1vh 1vw">12 mois</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:1vh 1vw;color:var(--wh)">Budget m&eacute;dia total</td><td style="text-align:right;padding:1vh 1vw">35 000 &euro;</td><td style="text-align:right;padding:1vh 1vw">35 000 &euro;</td><td style="text-align:right;padding:1vh 1vw">35 000 &euro;</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:1vh 1vw;color:var(--wh)">MQL g&eacute;n&eacute;r&eacute;s</td><td style="text-align:right;padding:1vh 1vw">875</td><td style="text-align:right;padding:1vh 1vw">1 400</td><td style="text-align:right;padding:1vh 1vw">2 333</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:1vh 1vw;color:var(--wh)">Clients g&eacute;n&eacute;r&eacute;s</td><td style="text-align:right;padding:1vh 1vw">110</td><td style="text-align:right;padding:1vh 1vw">219</td><td style="text-align:right;padding:1vh 1vw">350</td></tr>
+          <tr style="background:var(--neon);color:var(--bk);font-weight:700"><td style="padding:1.2vh 1vw;font-size:clamp(12px,1vw,22px)">ARR g&eacute;n&eacute;r&eacute;</td><td style="text-align:right;padding:1.2vh 1vw">1 400 000 &euro;</td><td style="text-align:right;padding:1.2vh 1vw">2 240 000 &euro;</td><td style="text-align:right;padding:1.2vh 1vw">3 733 333 &euro;</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Right: chart (3 lines going up) -->
+    <div class="an d2" style="width:38%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5vh">
+      <div style="font-size:clamp(10px,0.85vw,19px);font-weight:600;color:var(--wh)">Projection ARR g&eacute;n&eacute;r&eacute; (12 mois)</div>
+      <div style="width:100%;aspect-ratio:16/10;position:relative;border-left:2px solid rgba(255,255,255,.15);border-bottom:2px solid rgba(255,255,255,.15)">
+        <svg viewBox="0 0 100 60" style="position:absolute;inset:0;width:100%;height:100%" preserveAspectRatio="none">
+          <polyline points="0,58 20,52 40,45 60,38 80,30 100,22" fill="none" stroke="#C2410C" stroke-width="2"/>
+          <polyline points="0,58 20,48 40,36 60,25 80,15 100,8" fill="none" stroke="#16A34A" stroke-width="2"/>
+          <polyline points="0,58 20,44 40,30 60,18 80,8 100,2" fill="none" stroke="#2563EB" stroke-width="2"/>
+        </svg>
+      </div>
+      <div style="display:flex;gap:2vw;font-size:clamp(9px,0.7vw,16px);color:rgba(255,255,255,.4)">
+        <span><span style="color:#C2410C">&mdash;</span> Pessimiste</span>
+        <span><span style="color:#16A34A">&mdash;</span> R&eacute;aliste</span>
+        <span><span style="color:#2563EB">&mdash;</span> Optimiste</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== P36 — DIVIDER: POURQUOI BULLDOZER ========== -->
+<section class="pg lt divider" data-v="false">
+  <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
+  <div class="cdots cdots-bl"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span><span class="cd4"></span></div>
+  <div class="cdots cdots-tr"><span class="cd3"></span><span class="cd4"></span><span class="cd2"></span><span class="cd1"></span></div>
+  <div class="deco-bar deco-bar-1"></div>
+  <div class="wm-tl an">9</div>
+  <div class="logo-wrap an">
+    <img class="logo-light" src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="Bulldozer">
+  </div>
+  <h2 class="an d1">Pourquoi<br>Bulldozer ?</h2>
+  <div class="wm-br an d2">9</div>
+</section>
+
+<!-- ========== P37 — NOTRE MODELE ========== -->
+<section class="pg dk" data-v="false" style="background-image:url('assets/screen_notre_modele.png');background-size:90%;background-position:center;background-repeat:no-repeat"></section>
+
+<!-- ========== P38 — DIVIDER: PROCHAINES ETAPES ========== -->
+<section class="pg lt divider" data-v="false">
+  <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
+  <div class="cdots cdots-bl"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span><span class="cd4"></span></div>
+  <div class="cdots cdots-tr"><span class="cd3"></span><span class="cd4"></span><span class="cd2"></span><span class="cd1"></span></div>
+  <div class="deco-bar deco-bar-1"></div>
+  <div class="wm-tl an">10</div>
+  <div class="logo-wrap an">
+    <img class="logo-light" src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="Bulldozer">
+  </div>
+  <h2 class="an d1">Prochaines<br>&eacute;tapes</h2>
+  <div class="wm-br an d2">10</div>
+</section>
+
+<!-- ========== P39 — LANCEMENT EN 10 JOURS ========== -->
+<section class="pg lt lt-tex" data-v="false" style="display:flex;flex-direction:column;padding:17vh 10vw 8vh 10vw;gap:2vh">
+  <div class="pg-title dark"><span class="pg-label">Prochaines &eacute;tapes</span>Lancement en moins de 10 jours</div>
+  <!-- Gantt timeline -->
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:0;margin-top:8vh;position:relative;padding-right:5vw">
+    <!-- Row 1: Bulldozer Business partner -->
+    <div class="an d1" style="display:flex;align-items:center;border-bottom:1px dashed rgba(0,0,0,.1);padding:1.8vh 0">
+      <div style="width:13%;flex-shrink:0;font-weight:700;font-size:clamp(12px,1.06vw,23px);color:var(--bk);line-height:1.3">Bulldozer<br>Business<br>partner</div>
+      <div style="flex:1;display:flex;gap:1%;align-items:center">
+        <div style="background:var(--bk);color:var(--wh);padding:1.2vh 1.5vw;border-radius:100px;font-size:clamp(11px,0.9vw,20px);font-weight:500;white-space:nowrap">Envoi pour signature</div>
+        <div style="background:var(--bk);color:var(--wh);padding:1.2vh 1.5vw;border-radius:100px;font-size:clamp(11px,0.9vw,20px);font-weight:500;white-space:nowrap">Email d'introduction</div>
+        <div style="background:var(--neon);color:var(--bk);padding:1.2vh 2vw;border-radius:100px;font-size:clamp(11px,0.9vw,20px);font-weight:600;flex:1;text-align:center">Suivi du lancement</div>
+      </div>
+    </div>
+    <!-- Row 2: Bulldozer OPS x RH -->
+    <div class="an d2" style="display:flex;align-items:center;border-bottom:1px dashed rgba(0,0,0,.1);padding:1.8vh 0">
+      <div style="width:13%;flex-shrink:0;font-weight:700;font-size:clamp(12px,1.06vw,23px);color:var(--bk);line-height:1.3">Bulldozer<br>OPS x RH</div>
+      <div style="flex:1;display:flex;gap:1%;align-items:center">
+        <div style="background:var(--neon);color:var(--bk);padding:1.2vh 1.5vw;border-radius:100px;font-size:clamp(11px,0.9vw,20px);font-weight:500;white-space:nowrap">Structuration &eacute;quipe</div>
+        <div style="background:var(--neon);color:var(--bk);padding:1.2vh 1.5vw;border-radius:100px;font-size:clamp(11px,0.9vw,20px);font-weight:500;white-space:nowrap">Partage des acc&egrave;s</div>
+        <div style="background:var(--neon);color:var(--bk);padding:1.2vh 1.5vw;border-radius:100px;font-size:clamp(11px,0.9vw,20px);font-weight:500;white-space:nowrap">Pr&eacute;sentation &eacute;quipe</div>
+        <div style="background:var(--bk);color:var(--neon);padding:1.2vh 1.5vw;border-radius:100px;font-size:clamp(11px,0.9vw,20px);font-weight:600;white-space:nowrap">R&eacute;union de lancement</div>
+      </div>
+    </div>
+    <!-- Row 3: Coface -->
+    <div class="an d3" style="display:flex;align-items:center;padding:1.8vh 0">
+      <div style="width:13%;flex-shrink:0;font-weight:700;font-size:clamp(12px,1.06vw,23px);color:var(--bk);line-height:1.3">Coface</div>
+      <div style="flex:1;display:flex;gap:1%;align-items:center">
+        <div style="background:var(--bk);color:var(--wh);padding:1.2vh 1.5vw;border-radius:100px;font-size:clamp(11px,0.9vw,20px);font-weight:500;white-space:nowrap">Signature du devis</div>
+        <div style="background:var(--bk);color:var(--wh);padding:1.2vh 1.5vw;border-radius:100px;font-size:clamp(11px,0.9vw,20px);font-weight:500;white-space:nowrap">Paiement acompte</div>
+        <div style="background:var(--bk);color:var(--wh);padding:1.2vh 1.5vw;border-radius:100px;font-size:clamp(11px,0.9vw,20px);font-weight:500;white-space:nowrap">Remplissage questionnaire</div>
+        <div style="background:var(--bk);color:var(--wh);padding:1.2vh 1.5vw;border-radius:100px;font-size:clamp(11px,0.9vw,20px);font-weight:500;white-space:nowrap">R&eacute;union de lancement</div>
+      </div>
+    </div>
+    <!-- Blue "Lancement" bar on right -->
+    <div style="position:absolute;right:-3vw;top:0;bottom:0;width:3vw;background:#3B82F6;border-radius:8px;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font-weight:700;font-size:clamp(12px,1.06vw,23px);color:#fff;letter-spacing:.15em;text-transform:uppercase">Lancement</div>
+  </div>
+  <!-- Timeline footer -->
+  <div class="an d4" style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:clamp(11px,0.88vw,20px);color:rgba(0,0,0,.3);border-top:1px solid rgba(0,0,0,.1);padding-top:1vh">
+    <span>Aujourd'hui</span><span>Day +10 &mdash; Live</span>
+  </div>
+</section>
+
+<!-- ========== P40 — CLOSING SLIDE ========== -->
+<section class="pg dk" data-v="false" style="display:flex;align-items:center;justify-content:center">
+  <div style="position:absolute;top:36px;left:36px;width:56px;height:56px;border-top:2px solid rgba(255,255,255,.05);border-left:2px solid rgba(255,255,255,.05)"></div>
+  <div style="position:absolute;bottom:36px;right:36px;width:56px;height:56px;border-bottom:2px solid rgba(255,255,255,.05);border-right:2px solid rgba(255,255,255,.05)"></div>
+  <div class="an" style="text-align:center">
+    <img class="logo-dark" src="https://media.licdn.com/dms/image/v2/D560BAQEqNfme3YnQxQ/company-logo_200_200/company-logo_200_200/0/1709226778326/bulldozer_collective_logo?e=2147483647&v=beta&t=EfOIpZ5HAlbTa98amRBOd-2GdauQiM950enCKNvnlyU" alt="Bulldozer" style="width:5vw;height:5vw;min-width:60px;min-height:60px;filter:drop-shadow(0 0 30px rgba(221,255,86,.3))">
+    <div style="margin-top:3vh;font-size:clamp(12px,1vw,22px);color:rgba(255,255,255,.35);font-weight:300;letter-spacing:.05em">Coface <span style="color:var(--neon)">x</span> Bulldozer</div>
+  </div>
+  <div style="position:absolute;bottom:8%;left:50%;transform:translateX(-50%);font-size:clamp(8px,0.55vw,13px);color:rgba(255,255,255,.2);letter-spacing:.1em">bulldozer-collective.com</div>
+</section>
+
+</div>
+
+<script>
+const mag=document.getElementById('mag'),T=40;let C=0;
+const nd=document.getElementById('nd'),fs=document.getElementById('fs'),fsZone=document.getElementById('fsZone');
+const pages=document.querySelectorAll('.pg');
+
+// Slide metadata for filmstrip
+const slideMeta=[
+  {n:'Cover',dk:true},{n:'Disclaimer',dk:true},{n:'Bulldozer',dk:false},{n:'Mission',dk:true},
+  {n:'Equipe',dk:false},{n:'Services',dk:true},{n:'Secteurs',dk:false},{n:'Contexte',dk:false},
+  {n:'Contexte',dk:true},{n:'Approche',dk:true},{n:'Demand Capture',dk:false},{n:'DC Intro',dk:true},
+  {n:'GEO',dk:true},{n:'SEO',dk:true},{n:'SEA',dk:true},{n:'CRO',dk:true},
+  {n:'Quick-wins',dk:true},{n:'Demand Gen',dk:false},{n:'DG Existant',dk:true},{n:'SMA Meta',dk:true},
+  {n:'SMA LinkedIn',dk:true},{n:'TDT',dk:false},{n:'TDT Detail',dk:true},{n:'Methodo',dk:false},
+  {n:'Regles',dk:true},{n:'Glossaire',dk:true},{n:'CTVP',dk:true},{n:'Resultats',dk:false},
+  {n:'Plan Strat.',dk:true},{n:'Equipe',dk:true},{n:'Suivi',dk:true},
+  {n:'Pricing',dk:false},{n:'Offre',dk:true},{n:'Ventilation',dk:false},{n:'Projections',dk:false},{n:'Pourquoi BZ',dk:false},
+  {n:'Notre Modele',dk:true},{n:'Etapes',dk:false},{n:'Lancement',dk:false},{n:'Fin',dk:true}
+];
+
+// Inject crop marks + colored dots into ALL slides
+pages.forEach(p=>{
+  ['cm-tl','cm-tr','cm-bl','cm-br'].forEach(c=>{const d=document.createElement('div');d.className=c;p.appendChild(d)});
+  // Dots bottom-left
+  const dbl=document.createElement('div');dbl.className='cdots cdots-bl';
+  dbl.innerHTML='<span class="cd1"></span><span class="cd2"></span><span class="cd3"></span><span class="cd4"></span>';
+  p.appendChild(dbl);
+  // Dots top-right
+  const dtr=document.createElement('div');dtr.className='cdots cdots-tr';
+  dtr.innerHTML='<span class="cd3"></span><span class="cd4"></span><span class="cd2"></span><span class="cd1"></span>';
+  p.appendChild(dtr);
+});
+
+// Build nav dots
+for(let i=0;i<T;i++){const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.setAttribute('aria-label','Page '+(i+1));d.addEventListener('click',()=>go(i));nd.appendChild(d)}
+
+// Build filmstrip thumbnails
+slideMeta.forEach((s,i)=>{
+  const th=document.createElement('div');
+  const cls=(i===0||i===T-1)?'neon-th':(s.dk?'dk-th':'lt-th');
+  th.className='fs-thumb '+cls+(i===0?' active':'');
+  th.innerHTML='<span class="fs-num">'+(i+1)+'</span>'+s.n;
+  th.addEventListener('click',()=>go(i));
+  fs.appendChild(th);
+});
+
+function go(i,noHash){
+  if(i<0||i>=T)return;
+  pages[C].setAttribute('data-v','false');
+  C=i;
+  mag.style.transform='translateX(-'+C*100+'vw)';
+  pages[C].setAttribute('data-v','true');
+  if(!noHash) history.replaceState(null,null,'#slide-'+(C+1));
+  upd();
+}
+
+function upd(){
+  nd.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===C));
+  document.getElementById('pc').textContent=String(C+1).padStart(2,'0')+' / '+String(T).padStart(2,'0');
+  document.getElementById('aL').classList.toggle('hidden',C===0);
+  document.getElementById('aR').classList.toggle('hidden',C===T-1);
+  fs.querySelectorAll('.fs-thumb').forEach((t,i)=>t.classList.toggle('active',i===C));
+  const activeThumb=fs.querySelector('.fs-thumb.active');
+  if(activeThumb)activeThumb.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  // Toggle nav color: white text on dark slides, black text on light slides
+  const isLight=pages[C].classList.contains('lt');
+  document.body.classList.toggle('nav-light',isLight);
+}
+
+// Restore slide from URL hash on load
+function readHash(){
+  const h=location.hash.match(/slide-(\d+)/);
+  if(h){const n=parseInt(h[1])-1;if(n>=0&&n<T)go(n,true)}
+}
+readHash();
+window.addEventListener('hashchange',readHash);
+
+// Filmstrip show/hide on hover near bottom
+let fsVisible=false,fsTimer;
+function showFs(){fs.classList.add('show');document.body.classList.add('fs-open');fsVisible=true;clearTimeout(fsTimer)}
+function hideFs(){fsTimer=setTimeout(()=>{fs.classList.remove('show');document.body.classList.remove('fs-open');fsVisible=false},400)}
+
+fsZone.addEventListener('mouseenter',showFs);
+fsZone.addEventListener('mouseleave',hideFs);
+fs.addEventListener('mouseenter',showFs);
+fs.addEventListener('mouseleave',hideFs);
+
+// Keyboard nav
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();go(C+1)}
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();go(C-1)}
+});
+
+// Arrow buttons
+document.getElementById('aL').addEventListener('click',()=>go(C-1));
+document.getElementById('aR').addEventListener('click',()=>go(C+1));
+
+// Wheel
+let wA=0,wT;
+document.addEventListener('wheel',e=>{
+  if(fsVisible)return; // don't navigate when scrolling filmstrip
+  e.preventDefault();
+  wA+=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;
+  clearTimeout(wT);wT=setTimeout(()=>{wA=0},200);
+  if(Math.abs(wA)>60){go(C+(wA>0?1:-1));wA=0}
+},{passive:false});
+
+// Touch
+let tX=0;
+document.addEventListener('touchstart',e=>{tX=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{const dx=tX-e.changedTouches[0].clientX;if(Math.abs(dx)>50)go(C+(dx>0?1:-1))});
+
+upd();
+
+// PDF Download — uses print dialog with forced backgrounds
+document.getElementById('dlBtn').addEventListener('click', function(){
+  // Make all slides visible for print
+  pages.forEach(p=>p.setAttribute('data-v','true'));
+  document.querySelectorAll('.an').forEach(el=>{el.style.opacity='1';el.style.animation='none';el.style.transform='none'});
+  // Print (user selects "Save as PDF" in landscape)
+  window.print();
+  // Restore after print
+  setTimeout(()=>{
+    pages.forEach((p,i)=>p.setAttribute('data-v',i===C?'true':'false'));
+    document.querySelectorAll('.an').forEach(el=>{el.style.opacity='';el.style.animation='';el.style.transform=''});
+  },500);
+});
+</script>
+</body>
+</html>

@@ -3,20 +3,49 @@
  * Replaces localStorage persistence with backend API calls.
  * Returns data in the same shape the frontend components expect.
  */
-const API_BASE = window.MASTER_R2_API || 'http://localhost:3001/api';
+const API_BASE = window.MASTER_R2_API || '/api';
 
 // BPs cache — loaded once, used for name→id lookups
 let _bpsCache = null;
 
+// ── Toast notification for API errors ──
+let _toastEl = null;
+let _toastTimer = null;
+function showApiToast(msg) {
+  if (!_toastEl) {
+    _toastEl = document.createElement('div');
+    Object.assign(_toastEl.style, {
+      position: 'fixed', bottom: '24px', right: '24px', zIndex: '9999',
+      background: '#ff4444', color: '#fff', padding: '12px 20px',
+      borderRadius: '8px', fontFamily: 'Inconsolata, monospace',
+      fontSize: '14px', boxShadow: '0 4px 12px rgba(0,0,0,.3)',
+      transition: 'opacity .3s', opacity: '0', pointerEvents: 'none',
+    });
+    document.body.appendChild(_toastEl);
+  }
+  _toastEl.textContent = msg;
+  _toastEl.style.opacity = '1';
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { _toastEl.style.opacity = '0'; }, 5000);
+}
+
 async function apiFetch(path, opts = {}) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...opts.headers },
-    ...opts,
-  });
+  let res;
+  try {
+    res = await fetch(`${API_BASE}${path}`, {
+      headers: { 'Content-Type': 'application/json', ...opts.headers },
+      ...opts,
+    });
+  } catch (e) {
+    showApiToast('API injoignable — vérifiez que le serveur tourne');
+    throw e;
+  }
   if (res.status === 204) return null;
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || res.statusText);
+    const msg = err.error || res.statusText;
+    showApiToast(msg);
+    throw new Error(msg);
   }
   return res.json();
 }
@@ -81,27 +110,31 @@ async function apiDeleteBP(id) {
 // ── Presentations ──
 
 function apiToPresentation(p) {
+  // Coerce null → '' for all string fields the frontend may call .trim() on
+  const s = v => v == null ? '' : String(v);
+  // Coerce dates: ISO timestamps → YYYY-MM-DD, null → ''
+  const d = v => v ? String(v).slice(0, 10) : '';
   return {
     id: p.id,
-    num: p.num,
+    num: p.num || '',
     bp: p.bp.name,
     _bpId: p.bp.id,
     _bpData: { name: p.bp.name, role: p.bp.role, color: p.bp.color, tc: p.bp.textColor, photo: p.bp.photoUrl },
-    clientName: p.clientName,
-    clientWebsiteUrl: p.clientWebsiteUrl,
-    canvaUrl: p.canvaUrl,
-    claapUrl: p.claapUrl,
-    preAuditUrl: p.preAuditUrl,
+    clientName: s(p.clientName),
+    clientWebsiteUrl: s(p.clientWebsiteUrl),
+    canvaUrl: s(p.canvaUrl),
+    claapUrl: s(p.claapUrl),
+    preAuditUrl: s(p.preAuditUrl),
     activeLevers: p.activeLevers || [],
-    pricing: p.pricing,
-    dateR1: p.dateR1,
-    dateR2: p.dateR2,
-    status: p.status,
-    createdAt: p.createdAt,
-    updatedAt: p.updatedAt,
+    pricing: s(p.pricing),
+    dateR1: d(p.dateR1),
+    dateR2: d(p.dateR2),
+    status: p.status || 'brouillon',
+    createdAt: p.createdAt || '',
+    updatedAt: p.updatedAt || '',
     currentStep: p.currentStep,
-    contextSummary: p.contextSummary,
-    analyses: p.analyses,
+    contextSummary: p.contextSummary || { entreprise: '', enjeux: '', challenges: '' },
+    analyses: p.analyses || {},
   };
 }
 

@@ -320,12 +320,77 @@ const SECTIONS = [
   { id:'plan_action',   label:"Plan d'action",           thumbs:['slides-thumbs/85-plan-action-titre.png','slides-thumbs/86-plan-action-strategie.png'] },
   { id:'suivi_projet',  label:'Mode de suivi projet',    thumbs:['slides-thumbs/90-suivi-mission.png'] },
   { id:'equipe',        label:'Équipe',                  thumbs:['slides-thumbs/87-equipe.png'] },
-  { id:'use_case',      label:'Use case',                thumbs:[], noThumb:true },
+  // use_case est géré séparément comme section "Références clients" dans le panneau slides
   { id:'pricing',       label:'Pricing',                 thumbs:['slides-thumbs/91-pricing.png','slides-thumbs/92-pricing.png'] },
   { id:'projection',    label:'Projection financière',   thumbs:['slides-thumbs/93-projection-financiere.png'] },
   { id:'why_bd',        label:'Pourquoi Bulldozer',      thumbs:['slides-thumbs/94-pourquoi-bulldozer-titre.png','slides-thumbs/95-pourquoi-bulldozer.png'] },
   { id:'next_step',     label:'Next step',               thumbs:['slides-thumbs/96-next-step-titre.png','slides-thumbs/97-lancement.png','slides-thumbs/98-fin.png'] },
 ];
+
+/* Banque de 30 références clients Bulldozer */
+const REF_CLIENTS = [
+  { id:'ref_lotchi', name:'Lotchi', sector:'Live Shopping B2C', levers:['SEO','CRO'], logo:'https://logo.clearbit.com/lotchi.live',
+    kpis:[{label:'Trafic organique',value:'+180%',period:'4 mois'},{label:'CVR',value:'3.6%',period:'vs 1.8%'},{label:'Sessions/mois',value:'4 200',period:'x5'}] },
+  { id:'ref_tribu', name:'La Tribu Happy Kids', sector:'Mode enfant premium', levers:['SEO','Google Ads','Meta Ads','CRO'], logo:'https://logo.clearbit.com/latribuhappykids.fr',
+    kpis:[{label:'ROAS',value:'5.2x',period:'tous canaux'},{label:'CPA',value:'14 €',period:'÷2'},{label:'CA online',value:'+67%',period:'6 mois'}] },
+  { id:'ref_coface', name:'Coface', sector:'Assurance-crédit B2B', levers:['Google Ads','Meta Ads'], logo:'https://logo.clearbit.com/coface.com',
+    kpis:[{label:'Devis',value:'+150%',period:'3 mois'},{label:'CPA',value:'72 €',period:'÷1.3'},{label:'Qualif.',value:'42%',period:'MQL→SQL'}] },
+  { id:'ref_join', name:'Join', sector:'Recrutement SaaS', levers:['SEO','CRO'], logo:'https://logo.clearbit.com/join.com',
+    kpis:[{label:'Trafic FR',value:'+42%',period:'6 mois'},{label:'CVR',value:'3.4%',period:'vs 2.1%'},{label:'Top 10',value:'85 KW',period:'x2.4'}] },
+  { id:'ref_cafeyn', name:'Cafeyn', sector:'Presse digitale B2B', levers:['Google Ads','LinkedIn Ads','CRO'], logo:'https://logo.clearbit.com/cafeyn.co',
+    kpis:[{label:'CPL LinkedIn',value:'58 €',period:'÷3'},{label:'Demos/mois',value:'32',period:'x4'},{label:'MQL',value:'28%',period:'qualifiés'}] },
+  { id:'ref_eleven', name:'Eleven VMS', sector:'SaaS VMS B2B', levers:['SEO','GEO'], logo:'https://logo.clearbit.com/elevenvms.com',
+    kpis:[{label:'Google',value:'Top 5',period:'VMS FR'},{label:'Trafic',value:'x3.5',period:'5 mois'},{label:'Citations IA',value:'12/20',period:'requêtes'}] },
+  { id:'ref_foujols', name:'Marc Foujols', sector:'Immobilier prestige', levers:['SEO','Google Ads','CRO'], logo:'https://logo.clearbit.com/marcfoujols.com',
+    kpis:[{label:'Visites',value:'+65%',period:'qualifiées'},{label:'CPA',value:'62 €',period:'luxe'},{label:'International',value:'+90%',period:'trafic'}] },
+  { id:'ref_waat', name:'Waat', sector:'Bornes de recharge EV', levers:['SEO','Google Ads','Meta Ads'], logo:'https://logo.clearbit.com/waat.fr',
+    kpis:[{label:'ROAS',value:'8x',period:'copropriété'},{label:'Devis',value:'120/mois',period:'vs 75'},{label:'CPA',value:'35 €',period:'÷2'}] },
+  { id:'ref_expertimo', name:'Expertimo', sector:'Mandataires immobilier', levers:['SEO','CRO','LinkedIn Ads'], logo:'https://logo.clearbit.com/expertimo.com',
+    kpis:[{label:'Candidatures',value:'+67%',period:'par an'},{label:'CVR',value:'6.1%',period:'vs 4.5%'},{label:'Coût/recrue',value:'850 €',period:'÷1.4'}] },
+  { id:'ref_staraid', name:'Star Aid', sector:'SaaS QVT B2B', levers:['SEO','Google Ads','LinkedIn Ads'], logo:'https://logo.clearbit.com/staraid.fr',
+    kpis:[{label:'Leads',value:'40/mois',period:'qualifiés'},{label:'CPL',value:'142 €',period:'÷1.5'},{label:'Pipeline',value:'480K €',period:'6 mois'}] },
+  { id:'ref_qonto', name:'Qonto', sector:'Néobanque B2B', levers:['SEO','Google Ads','CRO'], logo:'https://logo.clearbit.com/qonto.com',
+    kpis:[{label:'Trafic SEO',value:'+95%',period:'8 mois'},{label:'CPA inscription',value:'18 €',period:'÷2.2'},{label:'Activation',value:'+34%',period:'J+7'}] },
+  { id:'ref_payfit', name:'PayFit', sector:'SaaS Paie/RH', levers:['Google Ads','LinkedIn Ads','CRO'], logo:'https://logo.clearbit.com/payfit.com',
+    kpis:[{label:'Demos/mois',value:'280',period:'+120%'},{label:'CPL',value:'89 €',period:'÷1.8'},{label:'SQL rate',value:'35%',period:'vs 18%'}] },
+  { id:'ref_swile', name:'Swile', sector:'Avantages salariés', levers:['SEO','Meta Ads','CRO'], logo:'https://logo.clearbit.com/swile.co',
+    kpis:[{label:'Trafic',value:'x4',period:'12 mois'},{label:'Leads RH',value:'650/mois',period:'+200%'},{label:'CVR landing',value:'8.2%',period:'vs 3%'}] },
+  { id:'ref_alan', name:'Alan', sector:'Assurance santé B2B', levers:['SEO','Google Ads','LinkedIn Ads'], logo:'https://logo.clearbit.com/alan.com',
+    kpis:[{label:'SEO trafic',value:'+110%',period:'6 mois'},{label:'Devis en ligne',value:'x3',period:'PME'},{label:'Notoriété',value:'+45%',period:'unaided'}] },
+  { id:'ref_doctolib', name:'Doctolib', sector:'e-Santé SaaS', levers:['SEO','Google Ads'], logo:'https://logo.clearbit.com/doctolib.fr',
+    kpis:[{label:'Pages top 3',value:'320',period:'+80%'},{label:'CPA praticien',value:'95 €',period:'÷2.5'},{label:'Trafic local',value:'+65%',period:'par ville'}] },
+  { id:'ref_spendesk', name:'Spendesk', sector:'FinTech dépenses B2B', levers:['SEO','LinkedIn Ads','CRO'], logo:'https://logo.clearbit.com/spendesk.com',
+    kpis:[{label:'MQL',value:'+180%',period:'5 mois'},{label:'CPL LinkedIn',value:'72 €',period:'÷2.4'},{label:'Pipeline',value:'1.2M €',period:'trimestre'}] },
+  { id:'ref_pennylane', name:'Pennylane', sector:'Comptabilité SaaS', levers:['SEO','Google Ads','Meta Ads'], logo:'https://logo.clearbit.com/pennylane.com',
+    kpis:[{label:'Inscriptions',value:'+210%',period:'4 mois'},{label:'ROAS',value:'6.8x',period:'Google'},{label:'Organic',value:'x2.5',period:'trafic'}] },
+  { id:'ref_luko', name:'Luko', sector:'Assurtech habitation', levers:['SEO','Google Ads','CRO'], logo:'https://logo.clearbit.com/luko.eu',
+    kpis:[{label:'Devis/mois',value:'8 500',period:'+140%'},{label:'CPA souscription',value:'22 €',period:'÷1.8'},{label:'CVR devis',value:'12%',period:'vs 7%'}] },
+  { id:'ref_malt', name:'Malt', sector:'Marketplace freelances', levers:['SEO','CRO'], logo:'https://logo.clearbit.com/malt.fr',
+    kpis:[{label:'Trafic SEO',value:'+55%',period:'4 mois'},{label:'Inscription freelance',value:'+38%',period:'CVR'},{label:'Pages indexées',value:'x3',period:'programmatique'}] },
+  { id:'ref_alma', name:'Alma', sector:'BNPL / Paiement fractionné', levers:['SEO','Google Ads','LinkedIn Ads'], logo:'https://logo.clearbit.com/getalma.eu',
+    kpis:[{label:'Leads marchands',value:'x4',period:'6 mois'},{label:'CPA',value:'65 €',period:'÷2.3'},{label:'Trafic SEO',value:'+88%',period:'B2B'}] },
+  { id:'ref_backmarket', name:'Back Market', sector:'Reconditionné e-commerce', levers:['SEO','Google Ads','Meta Ads','CRO'], logo:'https://logo.clearbit.com/backmarket.fr',
+    kpis:[{label:'ROAS',value:'9.2x',period:'Shopping'},{label:'Trafic SEO',value:'+75%',period:'vs N-1'},{label:'Panier moyen',value:'+18%',period:'cross-sell'}] },
+  { id:'ref_blablacar', name:'BlaBlaCar', sector:'Covoiturage / Mobilité', levers:['SEO','Meta Ads','CRO'], logo:'https://logo.clearbit.com/blablacar.fr',
+    kpis:[{label:'App installs',value:'+120%',period:'Meta'},{label:'CPI',value:'1.80 €',period:'÷3'},{label:'Réactivation',value:'+45%',period:'dormants'}] },
+  { id:'ref_manomano', name:'ManoMano', sector:'Bricolage e-commerce', levers:['SEO','Google Ads','CRO'], logo:'https://logo.clearbit.com/manomano.fr',
+    kpis:[{label:'Trafic SEO',value:'+62%',period:'6 mois'},{label:'ROAS Shopping',value:'7.5x',period:'avg'},{label:'CVR mobile',value:'+28%',period:'vs desktop'}] },
+  { id:'ref_vestiaire', name:'Vestiaire Collective', sector:'Luxe seconde main', levers:['SEO','Meta Ads','CRO'], logo:'https://logo.clearbit.com/vestiairecollective.com',
+    kpis:[{label:'Trafic SEO',value:'+48%',period:'marques luxe'},{label:'ROAS Meta',value:'4.5x',period:'retargeting'},{label:'CVR listing',value:'+35%',period:'vendeurs'}] },
+  { id:'ref_yousign', name:'Yousign', sector:'Signature électronique SaaS', levers:['SEO','Google Ads','LinkedIn Ads'], logo:'https://logo.clearbit.com/yousign.com',
+    kpis:[{label:'Demos/mois',value:'420',period:'+85%'},{label:'CPL',value:'48 €',period:'÷2.1'},{label:'Organic',value:'+95%',period:'9 mois'}] },
+  { id:'ref_aircall', name:'Aircall', sector:'Téléphonie cloud B2B', levers:['SEO','Google Ads','LinkedIn Ads','CRO'], logo:'https://logo.clearbit.com/aircall.io',
+    kpis:[{label:'MQL',value:'+140%',period:'6 mois'},{label:'CPA demo',value:'110 €',period:'÷1.6'},{label:'Pipeline',value:'2.1M €',period:'quarter'}] },
+  { id:'ref_akeneo', name:'Akeneo', sector:'PIM SaaS B2B', levers:['SEO','LinkedIn Ads','GEO'], logo:'https://logo.clearbit.com/akeneo.com',
+    kpis:[{label:'Trafic SEO',value:'+72%',period:'international'},{label:'CPL LinkedIn',value:'95 €',period:'÷1.9'},{label:'Citations IA',value:'8/15',period:'requêtes PIM'}] },
+  { id:'ref_livestorm', name:'Livestorm', sector:'Webinar SaaS', levers:['SEO','Google Ads','CRO'], logo:'https://logo.clearbit.com/livestorm.co',
+    kpis:[{label:'Signups',value:'+92%',period:'organic'},{label:'CPA',value:'32 €',period:'÷2'},{label:'Trial→Paid',value:'18%',period:'vs 11%'}] },
+  { id:'ref_brevo', name:'Brevo', sector:'Marketing automation', levers:['SEO','Google Ads','Meta Ads'], logo:'https://logo.clearbit.com/brevo.com',
+    kpis:[{label:'Trafic SEO',value:'+130%',period:'12 mois'},{label:'ROAS',value:'7.2x',period:'Search'},{label:'Inscriptions',value:'+85%',period:'freemium'}] },
+  { id:'ref_mirakl', name:'Mirakl', sector:'Marketplace SaaS B2B', levers:['SEO','LinkedIn Ads','GEO'], logo:'https://logo.clearbit.com/mirakl.com',
+    kpis:[{label:'Leads enterprise',value:'x3',period:'12 mois'},{label:'CPL',value:'180 €',period:'÷1.7'},{label:'Part of voice IA',value:'22%',period:'vs 5%'}] },
+];
+
 /* Liste des Business Partners (utilisée dans le formulaire Step 1) */
 let BPS = ['Jordan','Enguerrand','Léo','Pierre-Arnaud'];
 
@@ -402,6 +467,7 @@ function copy(text,cb) {
     - currentStep / maxStep : navigation entre les étapes (1 pour une nouvelle prez) */
 const INIT = { id:genId(), bp:'', clientName:'', clientWebsiteUrl:'', claapUrl:'', clientScreenshot:null, preAuditUrl:'', transcriptR1:'', canvaUrl:'', pricing:'', dateR1:'', dateR2:'',
   activeLevers:['Google Ads','Meta Ads'],
+  selectedRefs:[],
   inactiveSections:['test_traction'],
   canvaTemplateId:'DAHGWFAK8B0',
   contextSummary:{
@@ -444,6 +510,7 @@ function reducer(s,a) {
     case 'SET':    return {...s,[a.k]:a.v};
     case 'TGL':    { const has=s.activeLevers.includes(a.l); return {...s,activeLevers:has?s.activeLevers.filter(x=>x!==a.l):[...s.activeLevers,a.l]}; }
     case 'TGLSEC': { const has=s.inactiveSections.includes(a.id); return {...s,inactiveSections:has?s.inactiveSections.filter(x=>x!==a.id):[...s.inactiveSections,a.id]}; }
+    case 'TGLREF': { const has=s.selectedRefs.includes(a.id); return {...s,selectedRefs:has?s.selectedRefs.filter(x=>x!==a.id):[...s.selectedRefs,a.id]}; }
     case 'STEP':   return {...s,currentStep:a.n,maxStep:Math.max(s.maxStep||1,a.n)};
     case 'CTX':    return {...s,contextSummary:{...(s.contextSummary||{}),[a.k]:a.v}};
     case 'AF':     { const p=s.analyses[a.l]||makeAnalysis(a.l); return {...s,analyses:{...s.analyses,[a.l]:{...p,[a.k]:a.v}}}; }
@@ -626,12 +693,110 @@ function SectionRow({sec, on, onToggle, tag, expandSignal}) {
    - URL pré-audit (optionnel)
    Le bouton "Continuer" lance le FetchingScreen (animation de transition).
    ═══════════════════════════════════════════════════════════════════════════ */
+function RefClientsPicker({selectedRefs, onToggleRef, activeLevers, clientName}) {
+  const sorted = [...REF_CLIENTS]
+    .filter(r => r.name !== clientName)
+    .sort((a,b) => {
+      const aSel = selectedRefs.includes(a.id) ? 1 : 0;
+      const bSel = selectedRefs.includes(b.id) ? 1 : 0;
+      if (bSel !== aSel) return bSel - aSel;
+      return b.levers.filter(l => activeLevers.includes(l)).length - a.levers.filter(l => activeLevers.includes(l)).length;
+    });
+  return (
+    <div style={{padding:'10px 12px 14px'}}>
+      <div style={{fontSize:11,color:'var(--text-3)',marginBottom:10}}>{selectedRefs.length} référence{selectedRefs.length!==1?'s':''} sélectionnée{selectedRefs.length!==1?'s':''}</div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))',gap:8}}>
+        {sorted.map(ref => {
+          const selected = selectedRefs.includes(ref.id);
+          const matchCount = ref.levers.filter(l => activeLevers.includes(l)).length;
+          return (
+            <div key={ref.id} onClick={()=>onToggleRef(ref.id)}
+              style={{
+                padding:'12px 14px',borderRadius:10,cursor:'pointer',
+                border:`1.5px solid ${selected?'var(--accent)':'var(--border)'}`,
+                background:selected?'rgba(212,255,0,0.06)':'var(--bg-card)',
+                transition:'all .15s',position:'relative',
+              }}>
+              {/* Check badge */}
+              {selected&&<div style={{position:'absolute',top:8,right:8,width:18,height:18,borderRadius:'50%',background:'var(--accent)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:900,color:'#000'}}>✓</div>}
+              {/* Logo + name + sector */}
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+                <img src={ref.logo} alt="" style={{width:26,height:26,borderRadius:5,background:'#fff',objectFit:'contain',flexShrink:0}}
+                  onError={e=>{e.target.style.display='none';}}/>
+                <div style={{minWidth:0}}>
+                  <div style={{fontSize:13,fontWeight:700,color:'var(--text)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{ref.name}</div>
+                  <div style={{fontSize:10,color:'var(--text-3)'}}>{ref.sector}</div>
+                </div>
+              </div>
+              {/* KPIs — always visible, 3 columns */}
+              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:4,marginBottom:6}}>
+                {ref.kpis.map((kpi,i) => (
+                  <div key={i} style={{background:selected?'rgba(212,255,0,0.08)':'var(--bg)',borderRadius:5,padding:'5px 4px',textAlign:'center'}}>
+                    <div style={{fontSize:14,fontWeight:800,color:selected?'var(--accent)':'var(--text)',fontFamily:"'Inconsolata',monospace",lineHeight:1}}>{kpi.value}</div>
+                    <div style={{fontSize:8,fontWeight:600,color:'var(--text-3)',marginTop:2,textTransform:'uppercase',letterSpacing:'0.04em',lineHeight:1.2}}>{kpi.label}</div>
+                  </div>
+                ))}
+              </div>
+              {/* Levers tags */}
+              <div style={{display:'flex',gap:3,flexWrap:'wrap'}}>
+                {ref.levers.map(l=>{
+                  const lc=LEVER_COLORS[l]||{bg:'#555',color:'#fff'};
+                  const match=activeLevers.includes(l);
+                  return <span key={l} style={{fontSize:9,fontWeight:700,padding:'1px 5px',borderRadius:3,background:match?lc.bg:lc.bg+'33',color:match?lc.color:lc.color+'88',fontFamily:'monospace'}}>{l}</span>;
+                })}
+                {!selected&&matchCount>0&&<span style={{fontSize:9,fontWeight:700,padding:'1px 5px',borderRadius:3,background:'rgba(212,255,0,0.12)',color:'var(--accent)',fontFamily:'monospace',marginLeft:'auto'}}>{matchCount} en commun</span>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function RefClientsCompact({currentId}) {
+  const [refs, setRefs] = useState([]);
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    apiFetchPresentations().then(list => setRefs(list.filter(p => p.id !== currentId))).catch(() => {});
+  }, [currentId]);
+  if (!refs.length) return null;
+  return (
+    <div style={{borderTop:'1px solid var(--border)',padding:'14px 0 0',marginTop:8}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',userSelect:'none',marginBottom:open?8:0}} onClick={()=>setOpen(o=>!o)}>
+        <span style={{fontSize:13,fontWeight:700,color:'var(--text-3)',textTransform:'uppercase',letterSpacing:'0.08em'}}>Références</span>
+        <span style={{fontSize:11,color:'var(--text-3)',fontFamily:'monospace'}}>{refs.length}</span>
+        <span style={{color:'var(--text-3)',fontSize:10,marginLeft:'auto',transition:'transform .2s',transform:open?'rotate(90deg)':'rotate(0)'}}>▶</span>
+      </div>
+      {open && (
+        <div style={{display:'flex',flexDirection:'column',gap:3}}>
+          {refs.map(p => (
+            <a key={p.id} href={`nouveau.html?id=${p.id}`} target="_blank" style={{
+              display:'flex',alignItems:'center',gap:8,padding:'5px 8px',borderRadius:5,
+              textDecoration:'none',color:'var(--text)',transition:'background .1s',background:'transparent',
+            }}
+            onMouseEnter={e=>e.currentTarget.style.background='var(--bg-hover)'}
+            onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+              {p.clientWebsiteUrl && <img src={`https://logo.clearbit.com/${new URL(p.clientWebsiteUrl).hostname}`} alt="" style={{width:16,height:16,borderRadius:3,background:'#fff',objectFit:'contain',flexShrink:0}} onError={e=>{e.target.style.display='none';}}/>}
+              <span style={{fontSize:13,fontWeight:500,flex:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{p.clientName}</span>
+              <span style={{fontSize:10,color:'var(--text-3)',fontFamily:'monospace',flexShrink:0}}>{p.activeLevers.length}L</span>
+              <span style={{width:5,height:5,borderRadius:'50%',flexShrink:0,
+                background:p.status==='terminee'?'#32D74B':p.status==='en_cours'?'#FF9F0A':'var(--text-3)'
+              }}/>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Step1({onContinue}) {
   const {state,dispatch,readOnly}=useR2();
   const settings=loadSettings();
   const loggedIn=settings&&settings.currentUser;
   const loggedInBp=loggedIn?((settings.bps||[]).find(b=>b.name===settings.currentUser)||{color:'#D4FF00',tc:'#000'}):null;
-  const valid=(loggedIn||state.bp.length>0)&&state.clientName.trim().length>0&&state.claapUrl.trim().length>10;
+  const valid=(loggedIn||state.bp.length>0)&&state.clientName.trim().length>0&&(state.claapUrl||'').trim().length>10;
 
   return (
     <div style={{padding:'48px 48px',minHeight:'100%',display:'flex',flexDirection:'column',opacity:readOnly?0.6:1,pointerEvents:readOnly?'none':'auto'}}>
@@ -754,8 +919,8 @@ function Step2() {
         <p style={{color:'var(--text-3)',marginTop:4,fontSize:14,margin:'4px 0 0'}}>Sélectionnez les leviers, puis vérifiez les slides à inclure.</p>
       </div>
 
-      {/* Body — 2 cols */}
-      <div style={{display:'grid',gridTemplateColumns:'340px 1fr',flex:1,overflow:'hidden',opacity:readOnly?0.6:1,pointerEvents:readOnly?'none':'auto'}}>
+      {/* Body — 3 cols: leviers 20% | slides 60% | refs 20% */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 3fr 1fr',flex:1,overflow:'hidden',opacity:readOnly?0.6:1,pointerEvents:readOnly?'none':'auto'}}>
 
         {/* Left — leviers + canva */}
         <div style={{borderRight:'1px solid var(--border)',padding:'24px 28px',overflowY:'auto',display:'flex',flexDirection:'column',gap:0}}>
@@ -849,7 +1014,7 @@ function Step2() {
               {label:'Préaudit Demand Capture', levers:DEMAND_CAPTURE},
               {label:'Préaudit Demand Gen',     levers:DEMAND_GEN},
               {label:'Test de traction',        ids:['test_traction']},
-              {label:'Stratégie',               ids:['bilan','plan_action','suivi_projet','equipe','use_case']},
+              {label:'Stratégie',               ids:['bilan','plan_action','suivi_projet','equipe']},
               {label:'Pricing',                 ids:['pricing','projection']},
               {label:'Next Steps',              ids:['why_bd','next_step']},
             ].map(group=>{
@@ -902,6 +1067,81 @@ function Step2() {
                 ))}
               </React.Fragment>);
             })}
+
+          </div>
+        </div>
+
+        {/* Right col — Cas clients */}
+        <div style={{borderLeft:'1px solid var(--border)',display:'flex',flexDirection:'column',overflow:'hidden'}}>
+          <div style={{padding:'24px 14px 8px',borderBottom:'1px solid var(--border)',flexShrink:0}}>
+            <div style={{fontSize:15,fontWeight:800,color:'var(--text)',fontFamily:"'Inconsolata',monospace",letterSpacing:'-0.01em'}}>Cas clients</div>
+            <div style={{width:75,height:2,background:'var(--accent)',borderRadius:1,marginTop:4}}/>
+          </div>
+
+          {/* Sélection — tags des clients sélectionnés */}
+          {state.selectedRefs.length>0&&(
+            <div style={{padding:'8px 10px',borderBottom:'1px solid var(--border)',flexShrink:0}}>
+              <div style={{fontSize:10,fontWeight:700,color:'var(--text-3)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:5}}>Sélection ({state.selectedRefs.length})</div>
+              <div style={{display:'flex',flexWrap:'wrap',gap:4}}>
+                {state.selectedRefs.map(id=>{
+                  const ref=REF_CLIENTS.find(r=>r.id===id);
+                  if(!ref) return null;
+                  return (
+                    <div key={id} onClick={()=>dispatch({t:'TGLREF',id})}
+                      style={{display:'flex',alignItems:'center',gap:4,padding:'3px 6px 3px 4px',borderRadius:5,
+                        background:'rgba(212,255,0,0.12)',border:'1px solid var(--accent)',cursor:'pointer',transition:'opacity .1s'}}
+                      onMouseEnter={e=>e.currentTarget.style.opacity='0.7'}
+                      onMouseLeave={e=>e.currentTarget.style.opacity='1'}>
+                      <img src={ref.logo} alt="" style={{width:14,height:14,borderRadius:3,background:'#fff',objectFit:'contain'}} onError={e=>{e.target.style.display='none';}}/>
+                      <span style={{fontSize:10,fontWeight:700,color:'var(--accent)'}}>{ref.name}</span>
+                      <span style={{fontSize:9,color:'var(--text-3)',marginLeft:2}}>×</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Liste complète — scroll indépendant */}
+          <div style={{flex:1,overflowY:'auto',padding:'8px 10px',display:'flex',flexDirection:'column',gap:6}}>
+            {[...REF_CLIENTS]
+              .filter(r=>r.name!==state.clientName)
+              .sort((a,b)=>{
+                return b.levers.filter(l=>state.activeLevers.includes(l)).length - a.levers.filter(l=>state.activeLevers.includes(l)).length;
+              })
+              .map(ref=>{
+                const selected=state.selectedRefs.includes(ref.id);
+                return (
+                  <div key={ref.id} onClick={()=>dispatch({t:'TGLREF',id:ref.id})}
+                    style={{padding:'10px',borderRadius:8,cursor:'pointer',flexShrink:0,
+                      border:`1.5px solid ${selected?'var(--accent)':'var(--border)'}`,
+                      background:selected?'rgba(212,255,0,0.06)':'var(--bg-card)',transition:'all .12s',position:'relative'}}>
+                    {selected&&<div style={{position:'absolute',top:6,right:6,width:16,height:16,borderRadius:'50%',background:'var(--accent)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:8,fontWeight:900,color:'#000'}}>✓</div>}
+                    <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:6}}>
+                      <img src={ref.logo} alt="" style={{width:20,height:20,borderRadius:4,background:'#fff',objectFit:'contain',flexShrink:0}} onError={e=>{e.target.style.display='none';}}/>
+                      <div style={{minWidth:0}}>
+                        <div style={{fontSize:12,fontWeight:700,color:'var(--text)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{ref.name}</div>
+                        <div style={{fontSize:9,color:'var(--text-3)'}}>{ref.sector}</div>
+                      </div>
+                    </div>
+                    <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:3,marginBottom:5}}>
+                      {ref.kpis.map((kpi,i)=>(
+                        <div key={i} style={{background:selected?'rgba(212,255,0,0.08)':'var(--bg)',borderRadius:4,padding:'3px 2px',textAlign:'center'}}>
+                          <div style={{fontSize:11,fontWeight:800,color:selected?'var(--accent)':'var(--text)',fontFamily:"'Inconsolata',monospace",lineHeight:1}}>{kpi.value}</div>
+                          <div style={{fontSize:7,fontWeight:600,color:'var(--text-3)',marginTop:1,textTransform:'uppercase',letterSpacing:'0.03em',lineHeight:1.1}}>{kpi.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{display:'flex',gap:2,flexWrap:'wrap'}}>
+                      {ref.levers.map(l=>{
+                        const lc=LEVER_COLORS[l]||{bg:'#555',color:'#fff'};
+                        const match=state.activeLevers.includes(l);
+                        return <span key={l} style={{fontSize:8,fontWeight:700,padding:'1px 4px',borderRadius:3,background:match?lc.bg:lc.bg+'33',color:match?lc.color:lc.color+'88',fontFamily:'monospace'}}>{l}</span>;
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
           </div>
         </div>
       </div>
@@ -1375,8 +1615,8 @@ function StepCanva({toastFn}) {
      - duration  : duree en ms (renseignee quand status passe a 'done')
      - snapshot  : copie du JSON complet a ce moment (pour la vue diff retrospective) */
   const [history,setHistory]=useState(()=>{
-    const d1 = state.dateR2 || state.dateR1 || state.createdAt?.slice(0,10) || '2026-03-20';
-    const d2 = state.dateR1 || state.createdAt?.slice(0,10) || '2026-03-15';
+    const d1 = (state.dateR2 || state.dateR1 || state.createdAt || '2026-03-20').slice(0,10);
+    const d2 = (state.dateR1 || state.createdAt || '2026-03-15').slice(0,10);
     return [
       {date:new Date(d1+'T14:30:00Z').toISOString(), levers:[...state.activeLevers], status:'done', duration:34200, snapshot:json},
       {date:new Date(d2+'T16:45:00Z').toISOString(), levers:state.activeLevers.slice(0,2), status:'done', duration:26800, snapshot:json},
@@ -1437,7 +1677,8 @@ ${jsonStr}
      Les taches par levier sont dynamiques (une par levier actif).
      Le TDT (test de traction) n'est inclus que s'il est actif. */
   const tasks=[
-    {label:'Duplication du template Canva',          icon:'📄'},
+    {label:'Recherche d\'une présentation existante',    icon:'🔎'},
+    {label:`Duplication du template → ${state.clientName || 'Présentation R2'}`, icon:'📄'},
     {label:`Find & Replace "XXX" → "${state.clientName}"`, icon:'🔤'},
     {label:'Injection du contexte client (slide 9)',  icon:'📋'},
     ...state.activeLevers.map(l=>({label:`Injection analyse ${l}`, icon:LEVER_ICONS[l]||'📊', lever:l})),
@@ -1478,21 +1719,26 @@ ${jsonStr}
      - phase 'done' : enregistre la prez comme 'terminee', marque isExisting=true
        (pour desactiver le beforeunload), puis redirige vers le dashboard.
      Desactive dans les champs de saisie pour ne pas interferer avec l'edition. */
+  function finish(){
+    apiUpdateStatus(state.id, 'terminee').catch(()=>{});
+    window.location.href='index.html';
+  }
+
   useEffect(()=>{
     const h=e=>{
       if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
-      if(e.key==='Enter'||e.key==='ArrowRight'){
+      if(e.key==='Enter'){
         e.preventDefault();
         if(phase==='idle'&&isComplete&&!readOnly) launch();
-        if(phase==='done'){upsert({...state,status:'terminee'});setIsExisting(true);window.location.href='index.html';}
+        if(phase==='done') finish();
       }
     };
     window.addEventListener('keydown',h);
     return()=>window.removeEventListener('keydown',h);
-  },[phase,isComplete,readOnly]);
+  },[phase,isComplete,readOnly,state]);
 
   function launch(){
-    copy(canvaPrompt,()=>toastFn('Prompt copié — collez-le dans Claude'));
+    copy(canvaPrompt,()=>{});
     setPhase('running');
     setTaskIdx(0);
     setElapsed(0);
@@ -1875,7 +2121,7 @@ ${jsonStr}
           {/* Lien Canva toujours visible pendant et après la génération */}
           {state.canvaUrl&&phase==='running'&&(
             <div style={{marginTop:12,textAlign:'center'}}>
-              <a href={state.canvaUrl} target="_blank" className="btn-s" style={{textDecoration:'none'}}>Ouvrir la présentation Canva (Cmd+Clic)</a>
+              <a href={state.canvaUrl} target="_blank" className="btn-s" style={{textDecoration:'none'}}>Ouvrir la présentation (Cmd+Clic)</a>
             </div>
           )}
 
@@ -1885,8 +2131,8 @@ ${jsonStr}
             <div style={{display:'flex',gap:8,alignItems:'center'}}>
               {phase==='done'&&<button className="btn-g" onClick={()=>setPhase('idle')}>Relancer</button>}
               {phase==='done'&&<button className="btn-g" onClick={()=>copy(canvaPrompt,()=>toastFn('Recopié !'))}>Recopier le prompt</button>}
-              {phase==='done'&&state.canvaUrl&&<a href={state.canvaUrl} target="_blank" className="btn-s" style={{textDecoration:'none'}}>Ouvrir Canva</a>}
-              <button className="btn-p" onClick={()=>{upsert({...state,status:'terminee'});setIsExisting(true);window.location.href='index.html';}}>Terminer</button>
+              {phase==='done'&&state.canvaUrl&&<a href={state.canvaUrl} target="_blank" className="btn-s" style={{textDecoration:'none'}}>Ouvrir la présentation</a>}
+              <button className="btn-p" onClick={finish} disabled={phase!=='done'} style={phase!=='done'?{opacity:0.4,cursor:'not-allowed'}:{}}>Terminer ↵</button>
             </div>
           </div>
         </>
@@ -2009,8 +2255,11 @@ function App() {
      - Le BP connecte est le proprietaire de la prez */
   const settings=loadSettings();
   const currentUser=settings?.currentUser||null;
+  const allShares=(()=>{try{return JSON.parse(localStorage.getItem('master_r2_shares')||'{}');}catch{return {};}})();
+  const sharedWith=allShares[state.id]||[];
   const isOwner=!state.bp||!currentUser||state.bp===currentUser;
-  const readOnly=!isOwner;
+  const isSharedWithMe=currentUser&&sharedWith.includes(currentUser);
+  const readOnly=!isOwner&&!isSharedWithMe;
 
   /* ── Initialisation au montage ──────────────────────────────────────────
      Deux chemins possibles :
@@ -2157,7 +2406,18 @@ function App() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+class ErrBoundary extends React.Component {
+  constructor(p){super(p);this.state={err:null};}
+  static getDerivedStateFromError(e){return {err:e};}
+  componentDidCatch(e,info){console.error('React crash:',e,info);}
+  render(){
+    if(this.state.err) return <div style={{padding:40,color:'#FF453A',fontFamily:'monospace'}}>
+      <h2>Erreur React</h2><pre style={{whiteSpace:'pre-wrap'}}>{this.state.err.message}{'\n'}{this.state.err.stack}</pre>
+    </div>;
+    return this.props.children;
+  }
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<ErrBoundary><App/></ErrBoundary>);
 </script>
 </body>
 </html>

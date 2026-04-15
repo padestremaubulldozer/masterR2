@@ -233,13 +233,12 @@
   .burger-item.danger { color: var(--error); }
   .burger-item.danger:hover { background: rgba(255,69,58,0.08); }
   .btn-canva {
-    background: #fff; border-radius: 5px; display: inline-flex;
+    background: var(--accent); color: #000; border-radius: 5px; display: inline-flex;
     align-items: center; justify-content: center; gap: 5px; padding: 5px 12px;
     transition: opacity 0.15s; flex-shrink: 0; border: none; cursor: pointer; white-space: nowrap;
-    font-size: 13px; font-weight: 600;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.03em; text-decoration: none;
   }
   .btn-canva:hover { opacity: 0.85; }
-  .btn-canva img { width: 32px; height: 20px; object-fit: contain; display: block; }
   .btn-edit {
     background: transparent; border: 1px solid var(--border);
     border-radius: 6px; display: inline-flex; align-items: center; justify-content: center;
@@ -375,6 +374,21 @@ function App() {
   const [currentUserBp, setCUBp]= useState(null);
   // openMenu : id de la présentation dont le menu burger est ouvert (null = tous fermés)
   const [openMenu, setOpenMenu] = useState(null);
+  // shareMenu : id de la prez dont le sous-menu "Partager" est ouvert
+  const [shareMenu, setShareMenu] = useState(null);
+  // shares : { presId: [bpName, ...] } — stocké en localStorage
+  const [shares, setShares] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('master_r2_shares') || '{}'); } catch { return {}; }
+  });
+  function toggleShare(presId, bpName) {
+    setShares(prev => {
+      const list = prev[presId] || [];
+      const next = list.includes(bpName) ? list.filter(n => n !== bpName) : [...list, bpName];
+      const updated = { ...prev, [presId]: next };
+      localStorage.setItem('master_r2_shares', JSON.stringify(updated));
+      return updated;
+    });
+  }
 
   /** Duplique une presentation existante.
       Genere un nouvel ID unique (prefixe 'd' + timestamp base36) et un numero
@@ -663,6 +677,15 @@ function App() {
                     <td>
                         <div className="bp-hover-wrap" style={{display:'flex',alignItems:'center'}}>
                           <span className="bp-av-img"><BPAv name={p.bp} size={28} /></span>
+                          {(shares[p.id]||[]).length>0&&(
+                            <span style={{display:'flex',marginLeft:4}}>
+                              {(shares[p.id]||[]).map((name,i)=>(
+                                <span key={name} style={{marginLeft:i>0?-6:0,position:'relative',zIndex:10-i}} title={name}>
+                                  <BPAv name={name} size={20} />
+                                </span>
+                              ))}
+                            </span>
+                          )}
                           <span className="bp-name-slide">{p.bp}</span>
                         </div>
                       </td>
@@ -688,15 +711,34 @@ function App() {
                       <td onClick={e=>e.stopPropagation()}>
                         <div className="acts">
                           {p.canvaUrl ? (
-                            <a href={p.canvaUrl} target="_blank" className="btn-canva" title="Ouvrir dans Canva" onClick={e=>e.stopPropagation()}>
-                              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Canva_logo.svg/3840px-Canva_logo.svg.png" alt="Canva" />
+                            <a href={p.canvaUrl} target="_blank" className="btn-canva" title="Ouvrir la présentation" onClick={e=>e.stopPropagation()}>
+                              Présentation
                             </a>
                           ) : <div style={{width:50}}/>}
                           <div className={`burger-wrap${openMenu===p.id?' open':''}`}>
                             <button className="burger-btn" onClick={e=>{e.stopPropagation();setOpenMenu(openMenu===p.id?null:p.id);}}>⋯</button>
                             <div className="burger-menu">
-                              <a href={`nouveau.html?id=${p.id}`} className="burger-item" onClick={e=>e.stopPropagation()}>Ouvrir</a>
+                              {p.canvaUrl&&<a href={p.canvaUrl} target="_blank" className="burger-item" onClick={e=>e.stopPropagation()}>Présentation ↗</a>}
+                              <a href={`nouveau.html?id=${p.id}`} className="burger-item" onClick={e=>e.stopPropagation()}>Éditer</a>
                               <button className="burger-item" onClick={e=>{e.stopPropagation();duplicatePres(p);}}>Dupliquer</button>
+                              <button className="burger-item" onClick={e=>{e.stopPropagation();setShareMenu(shareMenu===p.id?null:p.id);}}>
+                                Partager {(shares[p.id]||[]).length>0&&<span style={{fontSize:10,color:'var(--accent)',marginLeft:4}}>({(shares[p.id]||[]).length})</span>}
+                              </button>
+                              {shareMenu===p.id&&(
+                                <div style={{padding:'6px 0',borderTop:'1px solid var(--border)'}}>
+                                  {BPS.filter(bp=>bp.name!==p.bp).map(bp=>{
+                                    const shared=(shares[p.id]||[]).includes(bp.name);
+                                    return (
+                                      <button key={bp.name} className="burger-item" onClick={e=>{e.stopPropagation();toggleShare(p.id,bp.name);}}
+                                        style={{display:'flex',alignItems:'center',gap:8,fontWeight:shared?700:400}}>
+                                        <BPAv name={bp.name} size={18} />
+                                        <span style={{flex:1}}>{bp.name}</span>
+                                        {shared&&<span style={{color:'var(--accent)',fontSize:12}}>✓</span>}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              )}
                               <button className="burger-item danger" onClick={e=>{e.stopPropagation();deletePres(p.id);}}>Supprimer</button>
                             </div>
                           </div>
