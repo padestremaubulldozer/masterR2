@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Carte des Variables — Template R2 Growth Plan</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Space Grotesk', sans-serif; background: #fff; color: #0A0A0A; padding: 0; }
+
+@page { size: A4 portrait; margin: 20mm 18mm; }
+@media print { .page-break { page-break-before: always; } }
+
+.cover { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0A0A0A; color: #F5F5F3; text-align: center; }
+.cover h1 { font-size: 48px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px; }
+.cover h1 span { color: #DDFF56; }
+.cover .sub { font-size: 18px; color: rgba(255,255,255,.5); margin-bottom: 40px; }
+.cover .meta { font-family: 'Space Mono', monospace; font-size: 12px; color: rgba(255,255,255,.3); letter-spacing: .1em; }
+
+h2 { font-size: 28px; font-weight: 700; margin: 40px 0 20px; padding-bottom: 8px; border-bottom: 3px solid #DDFF56; }
+h3 { font-size: 18px; font-weight: 600; margin: 24px 0 12px; color: #333; }
+h4 { font-size: 14px; font-weight: 600; margin: 16px 0 8px; color: #666; text-transform: uppercase; letter-spacing: .08em; }
+
+p, li { font-size: 13px; line-height: 1.7; color: #444; }
+ul { margin-left: 20px; margin-bottom: 12px; }
+
+table { width: 100%; border-collapse: collapse; margin: 12px 0 24px; font-size: 12px; }
+th { background: #0A0A0A; color: #F5F5F3; text-align: left; padding: 8px 12px; font-weight: 600; }
+td { padding: 6px 12px; border-bottom: 1px solid #eee; }
+tr:nth-child(even) td { background: #f9f9f9; }
+
+.tag { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; font-family: 'Space Mono', monospace; }
+.tag-det { background: #E8F5E9; color: #2E7D32; }
+.tag-var { background: #FFF3E0; color: #E65100; }
+.tag-price { background: #E3F2FD; color: #1565C0; }
+.tag-img { background: #F3E5F5; color: #7B1FA2; }
+
+.slide-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; break-inside: avoid; }
+.slide-card .slide-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.slide-card .slide-num { font-family: 'Space Mono', monospace; font-size: 11px; color: #999; min-width: 30px; }
+.slide-card .slide-name { font-size: 15px; font-weight: 600; }
+.slide-card .vars { margin-top: 8px; }
+.slide-card .var-item { font-family: 'Space Mono', monospace; font-size: 11px; color: #E65100; background: #FFF3E0; padding: 2px 8px; border-radius: 3px; display: inline-block; margin: 2px 4px 2px 0; }
+.slide-card .no-var { font-size: 12px; color: #999; font-style: italic; }
+
+.ascii-box { font-family: 'Space Mono', monospace; font-size: 10px; line-height: 1.4; background: #f5f5f5; padding: 12px 16px; border-radius: 6px; white-space: pre; overflow-x: auto; margin: 8px 0 16px; border: 1px solid #e0e0e0; }
+
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 20px 0; }
+.summary-box { border-radius: 8px; padding: 20px; text-align: center; }
+.summary-box .num { font-size: 36px; font-weight: 700; }
+.summary-box .label { font-size: 12px; margin-top: 4px; font-weight: 500; }
+.sb-det { background: #E8F5E9; color: #2E7D32; }
+.sb-var { background: #FFF3E0; color: #E65100; }
+.sb-price { background: #E3F2FD; color: #1565C0; }
+
+.workflow { background: #0A0A0A; color: #F5F5F3; border-radius: 12px; padding: 24px 32px; margin: 20px 0; }
+.workflow .step { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+.workflow .step-num { background: #DDFF56; color: #0A0A0A; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+.workflow .step-text { font-size: 13px; line-height: 1.5; }
+.workflow .step-text strong { color: #DDFF56; }
+.workflow .arrow { text-align: center; color: #DDFF56; font-size: 18px; margin: -8px 0; padding-left: 6px; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="meta">DOCUMENT TECHNIQUE — AVRIL 2026</div>
+  <h1>Carte des <span>Variables</span></h1>
+  <div class="sub">Template R2 Growth Plan — 52 slides</div>
+  <div class="meta" style="margin-top:40px">BULLDOZER x CLAUDE CODE</div>
+  <div class="meta" style="margin-top:8px">Deterministe vs Probabiliste</div>
+</div>
+
+<!-- PAGE 2: SYNTHESE -->
+<div class="page-break"></div>
+<h2>Synthese</h2>
+<p>Le template R2 contient <strong>52 slides</strong>. Chaque slide est classee selon la nature de son contenu :</p>
+
+<div class="summary-grid">
+  <div class="summary-box sb-det"><div class="num">26</div><div class="label">DETERMINISTES<br>Code fige, interdit de modifier</div></div>
+  <div class="summary-box sb-var"><div class="num">23</div><div class="label">PROBABILISTES<br>Le LLM redige le contenu</div></div>
+  <div class="summary-box sb-price"><div class="num">3</div><div class="label">PRICING<br>Saisie manuelle (devis)</div></div>
+</div>
+
+<h3>Principe de separation</h3>
+<table>
+  <tr><th>Couche</th><th>Quoi</th><th>Qui</th><th>Quand</th></tr>
+  <tr><td><span class="tag tag-det">DET</span></td><td>HTML, CSS, JS, layout, animations, crop marks, navigation</td><td>Devs (fige)</td><td>Deja fait — <strong>ne plus toucher</strong></td></tr>
+  <tr><td><span class="tag tag-var">VAR</span></td><td>Textes contexte, audits, bilan, plan strategique, equipe</td><td>Claude (LLM)</td><td>A chaque nouveau client</td></tr>
+  <tr><td><span class="tag tag-price">$$</span></td><td>Montants HT, ventilation, projections financieres</td><td>Humain</td><td>Apres validation du devis</td></tr>
+  <tr><td><span class="tag tag-img">IMG</span></td><td>Screenshots site client, profils LinkedIn, graphes TDT</td><td>Headless Chrome</td><td>Automatisable</td></tr>
+</table>
+
+<h3>Volume de variables</h3>
+<p><strong>~135 variables uniques</strong> (dont ~15 screenshots) a remplir par client, reparties en 9 categories (identite, contexte, audits DC, audits DG, TDT, bilan, plan, equipe, pricing).</p>
+
+<!-- PAGE 3: WORKFLOW -->
+<div class="page-break"></div>
+<h2>Workflow de generation</h2>
+
+<div class="workflow">
+  <div class="step"><div class="step-num">1</div><div class="step-text"><strong>INPUT</strong> — Brief client (PDF, notes d'appel, acces site web)</div></div>
+  <div class="arrow">↓</div>
+  <div class="step"><div class="step-num">2</div><div class="step-text"><strong>COPIE TEMPLATE</strong> — Dupliquer template.html → &lt;slug&gt;.html</div></div>
+  <div class="arrow">↓</div>
+  <div class="step"><div class="step-num">3</div><div class="step-text"><strong>FIND-REPLACE</strong> — XXX → nom du client (32 occurrences automatiques)</div></div>
+  <div class="arrow">↓</div>
+  <div class="step"><div class="step-num">4</div><div class="step-text"><strong>SCREENSHOTS</strong> — Headless Chrome capture le site client → assets/clients/&lt;slug&gt;/</div></div>
+  <div class="arrow">↓</div>
+  <div class="step"><div class="step-num">5</div><div class="step-text"><strong>LLM REMPLIT</strong> — Claude analyse le brief et redige : contexte, audits, bilan, plan strategique (~90 variables)</div></div>
+  <div class="arrow">↓</div>
+  <div class="step"><div class="step-num">6</div><div class="step-text"><strong>PRICING</strong> — L'equipe saisit manuellement les montants du devis (~24 variables)</div></div>
+  <div class="arrow">↓</div>
+  <div class="step"><div class="step-num">7</div><div class="step-text"><strong>EQUIPE</strong> — Noms, roles et photos de l'equipe assignee (~6 variables)</div></div>
+  <div class="arrow">↓</div>
+  <div class="step"><div class="step-num">8</div><div class="step-text"><strong>OUTPUT</strong> — &lt;slug&gt;.html pret a presenter / exporter en PDF</div></div>
+</div>
+
+<!-- PAGE 4-10: DETAIL SLIDE PAR SLIDE -->
+<div class="page-break"></div>
+<h2>Detail slide par slide</h2>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S01</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">COVER</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Nom du client dans le titre et le footer</p>
+  <div class="vars">
+    <span class="var-item">client_name</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S02</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">DISCLAIMER</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Nom du client dans 3 paragraphes juridiques</p>
+  <div class="vars">
+    <span class="var-item">client_name (x3)</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S03</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Divider: Bulldozer</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S04</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Mission</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S05</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Equipe Bulldozer (300+ experts)</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S06</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Services (8 expertises)</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S07</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Secteurs d'activites (8 cards logos)</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S08</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Divider: Contexte</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S09</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">CONTEXTE DETAIL</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Description de l'entreprise, ses enjeux, 3 challenges + screenshot du site</p>
+  <div class="vars">
+    <span class="var-item">client_name</span>
+    <span class="var-item">entreprise</span>
+    <span class="var-item">enjeux</span>
+    <span class="var-item">challenge_1_title</span>
+    <span class="var-item">challenge_1_text</span>
+    <span class="var-item">challenge_2_title</span>
+    <span class="var-item">challenge_2_text</span>
+    <span class="var-item">challenge_3_title</span>
+    <span class="var-item">challenge_3_text</span>
+    <span class="var-item">screenshot_client</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S10</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">APPROCHE BULLDOZER</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Comment Bulldozer accompagne ce client specifiquement</p>
+  <div class="vars">
+    <span class="var-item">client_name</span>
+    <span class="var-item">approche_intro</span>
+    <span class="var-item">demand_capture_text</span>
+    <span class="var-item">demand_gen_text</span>
+    <span class="var-item">objectif_text</span>
+    <span class="var-item">screenshot_bulldozer_site</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S11</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Divider: Pre-audit Demand Capture</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S12</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">DC INTRO</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Intro du pre-audit Demand Capture</p>
+  <div class="vars">
+    <span class="var-item">client_name (x4)</span>
+    <span class="var-item">dc_objectif</span>
+    <span class="var-item">dc_perimetre</span>
+    <span class="var-item">screenshot_dc_intro</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S13</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">GEO AUDIT</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Audit GEO avec note globale + 6 sous-scores + screenshot outil</p>
+  <div class="vars">
+    <span class="var-item">geo_note</span>
+    <span class="var-item">geo_summary</span>
+    <span class="var-item">geo_score_visibilite</span>
+    <span class="var-item">geo_detail_visibilite</span>
+    <span class="var-item">geo_score_trafic</span>
+    <span class="var-item">geo_detail_trafic</span>
+    <span class="var-item">geo_score_contenu</span>
+    <span class="var-item">geo_detail_contenu</span>
+    <span class="var-item">geo_score_technique</span>
+    <span class="var-item">geo_detail_technique</span>
+    <span class="var-item">geo_score_autorite</span>
+    <span class="var-item">geo_detail_autorite</span>
+    <span class="var-item">geo_score_opportunites</span>
+    <span class="var-item">geo_detail_opportunites</span>
+    <span class="var-item">screenshot_geo_tool</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S14</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">SEO AUDIT</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Audit SEO + screenshot outil</p>
+  <div class="vars">
+    <span class="var-item">seo_note</span>
+    <span class="var-item">seo_summary</span>
+    <span class="var-item">seo_scores (x5 + details)</span>
+    <span class="var-item">screenshot_seo_tool</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S15</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">SEA AUDIT</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Audit SEA + screenshot outil</p>
+  <div class="vars">
+    <span class="var-item">sea_note</span>
+    <span class="var-item">sea_summary</span>
+    <span class="var-item">sea_scores (x5 + details)</span>
+    <span class="var-item">screenshot_sea_tool</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S16</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">CRO AUDIT</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Audit CRO + screenshot page client</p>
+  <div class="vars">
+    <span class="var-item">cro_note</span>
+    <span class="var-item">cro_summary</span>
+    <span class="var-item">cro_scores (x4 + details)</span>
+    <span class="var-item">screenshot_client_cro</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S17</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">QUICK-WINS CRO</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">3 recommandations concretes CRO</p>
+  <div class="vars">
+    <span class="var-item">qw1_title</span>
+    <span class="var-item">qw1_text</span>
+    <span class="var-item">qw2_title</span>
+    <span class="var-item">qw2_text</span>
+    <span class="var-item">qw3_title</span>
+    <span class="var-item">qw3_text</span>
+    <span class="var-item">screenshot_client_cro_scroll</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S18</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Divider: Pre-audit Demand Gen</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S19</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">DG INTRO</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Intro Demand Gen + 4 leviers activables</p>
+  <div class="vars">
+    <span class="var-item">client_name (x5)</span>
+    <span class="var-item">dg_intro</span>
+    <span class="var-item">dg_objectif</span>
+    <span class="var-item">levier_1_text</span>
+    <span class="var-item">levier_2_text</span>
+    <span class="var-item">levier_3_text</span>
+    <span class="var-item">levier_4_text</span>
+    <span class="var-item">screenshot_dg_intro</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S20</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">SMA META AUDIT</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Audit SMA Meta avec note + scores + screenshot</p>
+  <div class="vars">
+    <span class="var-item">sma_meta_note</span>
+    <span class="var-item">sma_meta_summary</span>
+    <span class="var-item">sma_meta_scores (x5)</span>
+    <span class="var-item">sma_meta_limites</span>
+    <span class="var-item">screenshot_sma_meta</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S21</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">SMA LINKEDIN AUDIT</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Audit SMA LinkedIn + screenshot</p>
+  <div class="vars">
+    <span class="var-item">sma_linkedin_note</span>
+    <span class="var-item">sma_linkedin_summary</span>
+    <span class="var-item">sma_linkedin_scores (x5)</span>
+    <span class="var-item">sma_linkedin_limites</span>
+    <span class="var-item">screenshot_sma_linkedin</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S22</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Divider: TDT Demand Gen</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S23</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">TDT DETAIL</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Config du test de traction</p>
+  <div class="vars">
+    <span class="var-item">client_name (x2)</span>
+    <span class="var-item">tdt_budget</span>
+    <span class="var-item">tdt_duree</span>
+    <span class="var-item">tdt_equipe</span>
+    <span class="var-item">screenshot_tdt_detail</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S24</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Divider: Methodologie</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S25</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Rappel des regles du test</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S26</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Glossaire (Lead/MQL/SQL/Opp/Vente)</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S27</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Methodologie CTVP</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S28</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Divider: Resultats & Analyses</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S29</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">TDT META RESULTATS</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Resultats Meta + insights + 2 graphes + 3 profils LinkedIn</p>
+  <div class="vars">
+    <span class="var-item">meta_budget</span>
+    <span class="var-item">meta_leads</span>
+    <span class="var-item">meta_leads_q</span>
+    <span class="var-item">meta_cpl</span>
+    <span class="var-item">meta_cpl_q</span>
+    <span class="var-item">meta_best_pdv</span>
+    <span class="var-item">meta_cout_global</span>
+    <span class="var-item">meta_cout_best</span>
+    <span class="var-item">meta_insight_1</span>
+    <span class="var-item">meta_insight_2</span>
+    <span class="var-item">meta_insight_3</span>
+    <span class="var-item">graph_tdt_meta (x2)</span>
+    <span class="var-item">linkedin_profile_img (x3)</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S30</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">TDT LINKEDIN RESULTATS</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Resultats LinkedIn + insights + 2 graphes + 3 profils LinkedIn</p>
+  <div class="vars">
+    <span class="var-item">linkedin_budget</span>
+    <span class="var-item">linkedin_leads</span>
+    <span class="var-item">linkedin_leads_q</span>
+    <span class="var-item">linkedin_cpl</span>
+    <span class="var-item">linkedin_cpl_q</span>
+    <span class="var-item">linkedin_best_pdv</span>
+    <span class="var-item">linkedin_cout_best</span>
+    <span class="var-item">linkedin_insights[]</span>
+    <span class="var-item">graph_tdt_linkedin (x2)</span>
+    <span class="var-item">linkedin_profile_img (x3)</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S31</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">PRINCIPAUX RESULTATS LINKEDIN</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Grille 3x2 avec KPIs LinkedIn</p>
+  <div class="vars">
+    <span class="var-item">li_duree</span>
+    <span class="var-item">li_budget_media</span>
+    <span class="var-item">li_leads</span>
+    <span class="var-item">li_cpl</span>
+    <span class="var-item">li_mql</span>
+    <span class="var-item">li_cout_mql</span>
+    <span class="var-item">li_best_pdv</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S32</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">PRINCIPAUX RESULTATS FACEBOOK</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Grille 3x2 avec KPIs Facebook</p>
+  <div class="vars">
+    <span class="var-item">fb_duree</span>
+    <span class="var-item">fb_budget_media</span>
+    <span class="var-item">fb_leads</span>
+    <span class="var-item">fb_cpl</span>
+    <span class="var-item">fb_mql</span>
+    <span class="var-item">fb_cout_mql</span>
+    <span class="var-item">fb_best_pdv</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S33</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Divider: Bilan</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S34</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">BILAN CONTENU</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Synthese DC + DG avec points +/-/limites</p>
+  <div class="vars">
+    <span class="var-item">dc_positifs[] (3)</span>
+    <span class="var-item">dc_negatifs[] (3)</span>
+    <span class="var-item">dg_positifs[] (2)</span>
+    <span class="var-item">dg_negatifs[] (2)</span>
+    <span class="var-item">limites[] (3)</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S35</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Divider: Success Stories</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S36</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">SS Adecco</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Contenu fige — reference client Bulldozer</p>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S37</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">SS Addingwell</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S38</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">SS Alma</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S39</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">SS Dotfile</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S40</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">SS Vertuoza</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S41</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">SS Velux</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S42</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">PLAN STRATEGIQUE</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">3 phases avec objectifs, priorites, livrables</p>
+  <div class="vars">
+    <span class="var-item">client_name</span>
+    <span class="var-item">phase1_titre</span>
+    <span class="var-item">phase1_periode</span>
+    <span class="var-item">phase1_objectif</span>
+    <span class="var-item">phase1_priorites[] (4)</span>
+    <span class="var-item">phase1_livrables</span>
+    <span class="var-item">phase2_titre</span>
+    <span class="var-item">phase2_periode</span>
+    <span class="var-item">phase2_objectif</span>
+    <span class="var-item">phase2_priorites[] (4)</span>
+    <span class="var-item">phase2_livrables</span>
+    <span class="var-item">phase3_titre</span>
+    <span class="var-item">phase3_periode</span>
+    <span class="var-item">phase3_objectif</span>
+    <span class="var-item">phase3_priorites[] (4)</span>
+    <span class="var-item">phase3_livrables</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S43</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">EQUIPE CLIENT</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Business partner + Head of Growth + 3 membres</p>
+  <div class="vars">
+    <span class="var-item">bp_name</span>
+    <span class="var-item">bp_photo_url</span>
+    <span class="var-item">hog_photo_url</span>
+    <span class="var-item">member_1_role</span>
+    <span class="var-item">member_1_photo</span>
+    <span class="var-item">member_2_role</span>
+    <span class="var-item">member_2_photo</span>
+    <span class="var-item">member_3_role</span>
+    <span class="var-item">member_3_photo</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S44</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Suivi de mission</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Contenu generique Bulldozer</p>
+  <div class="vars"><span class="var-item">screenshot_suivi</span></div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S45</span>
+    <span class="tag tag-price">$$</span>
+    <span class="slide-name">OFFRE GROWTH PLAN</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Tableau pricing — saisie manuelle</p>
+  <div class="vars">
+    <span class="var-item">offer_title</span>
+    <span class="var-item">phase_title</span>
+    <span class="var-item">role_1..5_name</span>
+    <span class="var-item">role_1..5_setup</span>
+    <span class="var-item">role_1..5_monthly</span>
+    <span class="var-item">role_1..5_subtotal</span>
+    <span class="var-item">total_general</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S46</span>
+    <span class="tag tag-price">$$</span>
+    <span class="slide-name">VENTILATION DES COUTS</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Detail mensuel par element — saisie manuelle</p>
+  <div class="vars">
+    <span class="var-item">mois_labels[] (3)</span>
+    <span class="var-item">phase_name</span>
+    <span class="var-item">items[] (statut, element, mois[3], subtotal)</span>
+    <span class="var-item">totaux_mois[] (3)</span>
+    <span class="var-item">total_general</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S47</span>
+    <span class="tag tag-price">$$</span>
+    <span class="slide-name">PROJECTION FINANCIERE</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">3 scenarios financiers — saisie manuelle</p>
+  <div class="vars">
+    <span class="var-item">pessimiste/realiste/optimiste x (cout_mql, conversion, panier, duree, budget, mql, clients, arr)</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S48</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Divider: Pourquoi Bulldozer</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S49</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Notre Modele</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S50</span>
+    <span class="tag tag-det">DET</span>
+    <span class="slide-name">Divider: Prochaines etapes</span>
+  </div>
+  <div class="no-var">Aucune variable — contenu fige</div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S51</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">LANCEMENT EN 10 JOURS</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Gantt timeline avec nom du client</p>
+  <div class="vars">
+    <span class="var-item">client_name (x2)</span>
+  </div>
+</div>
+<div class="slide-card">
+  <div class="slide-header">
+    <span class="slide-num">S52</span>
+    <span class="tag tag-var">VAR</span>
+    <span class="slide-name">CLOSING</span>
+  </div>
+  <p style="font-size:12px;color:#666;margin-bottom:6px">Slide de fin avec nom du client</p>
+  <div class="vars">
+    <span class="var-item">client_name</span>
+  </div>
+</div>
+
+<div class="page-break"></div>
+<h2>Categories de variables</h2>
+
+<h3>A. Identite (find-replace automatique)</h3>
+<table>
+  <tr><th>Variable</th><th>Slides</th><th>Description</th></tr>
+  <tr><td><code>client_name</code></td><td>1,2,9,10,12,19,23,42,51,52</td><td>Nom commercial — 32 occurrences de "XXX"</td></tr>
+  <tr><td><code>client_slug</code></td><td>chemins assets</td><td>URL-safe avec underscores</td></tr>
+  <tr><td><code>bp_name</code></td><td>43</td><td>Nom du Business Partner</td></tr>
+</table>
+
+<h3>B. Contexte (LLM redige)</h3>
+<table>
+  <tr><th>Variable</th><th>Slide</th><th>Exemple</th></tr>
+  <tr><td><code>entreprise</code></td><td>9</td><td>"Cabinet de gestion de patrimoine (~40 pers.)"</td></tr>
+  <tr><td><code>enjeux</code></td><td>9</td><td>"Reduire la dependance aux leads..."</td></tr>
+  <tr><td><code>challenges[] (x3)</code></td><td>9</td><td>[{title, text}] — 3 challenges numerotes</td></tr>
+  <tr><td><code>approche_*</code></td><td>10</td><td>Intro + DC text + DG text + objectif</td></tr>
+</table>
+
+<h3>C. Pre-audit Demand Capture (LLM analyse)</h3>
+<table>
+  <tr><th>Variable</th><th>Slide</th><th>Sous-scores</th></tr>
+  <tr><td><code>geo.*</code></td><td>13</td><td>note + summary + 6 scores</td></tr>
+  <tr><td><code>seo.*</code></td><td>14</td><td>note + summary + 5 scores</td></tr>
+  <tr><td><code>sea.*</code></td><td>15</td><td>note + summary + 5 scores</td></tr>
+  <tr><td><code>cro.*</code></td><td>16</td><td>note + summary + 4 scores</td></tr>
+  <tr><td><code>quick_wins[] (x3)</code></td><td>17</td><td>[{title, text}]</td></tr>
+</table>
+
+<h3>D. Pre-audit Demand Gen (LLM analyse)</h3>
+<table>
+  <tr><th>Variable</th><th>Slide</th><th>Sous-scores</th></tr>
+  <tr><td><code>dg_intro, leviers[] (x4)</code></td><td>19</td><td>Intro + 4 leviers</td></tr>
+  <tr><td><code>sma_meta.*</code></td><td>20</td><td>note + summary + 5 scores + limites</td></tr>
+  <tr><td><code>sma_linkedin.*</code></td><td>21</td><td>idem</td></tr>
+</table>
+
+<h3>E. TDT + Resultats (donnees factuelles)</h3>
+<table>
+  <tr><th>Variable</th><th>Slide</th><th>Type</th></tr>
+  <tr><td><code>tdt_config</code></td><td>23</td><td>budget, duree, equipe</td></tr>
+  <tr><td><code>meta_resultats</code></td><td>29</td><td>budget, leads, cpl, best_pdv, insights[]</td></tr>
+  <tr><td><code>linkedin_resultats</code></td><td>30</td><td>idem</td></tr>
+  <tr><td><code>li_kpis</code></td><td>31</td><td>budget, leads, cpl, mql, cout_mql, best_pdv</td></tr>
+  <tr><td><code>fb_kpis</code></td><td>32</td><td>idem</td></tr>
+</table>
+
+<h3>F. Bilan + Plan (LLM synthetise)</h3>
+<table>
+  <tr><th>Variable</th><th>Slide</th><th>Contenu</th></tr>
+  <tr><td><code>bilan_dc/dg</code></td><td>34</td><td>positifs[], negatifs[], limites[]</td></tr>
+  <tr><td><code>phases[] (x3)</code></td><td>42</td><td>titre, periode, objectif, priorites[], livrables</td></tr>
+</table>
+
+<h3>G. Equipe (manuel)</h3>
+<table>
+  <tr><th>Variable</th><th>Slide</th><th>Type</th></tr>
+  <tr><td><code>bp_name, bp_photo</code></td><td>43</td><td>Business Partner assigne</td></tr>
+  <tr><td><code>hog_photo</code></td><td>43</td><td>Head of Growth</td></tr>
+  <tr><td><code>members[] (x3)</code></td><td>43</td><td>role, subtitle, photo_url</td></tr>
+</table>
+
+<h3>H. Pricing (saisie manuelle)</h3>
+<table>
+  <tr><th>Variable</th><th>Slide</th><th>Contenu</th></tr>
+  <tr><td><code>offre</code></td><td>45</td><td>title, roles[] (name, setup, monthly, subtotal), total</td></tr>
+  <tr><td><code>ventilation</code></td><td>46</td><td>mois[], phases[].items[], totaux</td></tr>
+  <tr><td><code>projections</code></td><td>47</td><td>3 scenarios x 8 variables</td></tr>
+</table>
+
+<h3>I. Screenshots (automatique)</h3>
+<table>
+  <tr><th>Variable</th><th>Slides</th><th>Source</th></tr>
+  <tr><td><code>screenshot_client</code></td><td>9</td><td>Headless Chrome → site client</td></tr>
+  <tr><td><code>screenshot_client_cro</code></td><td>16, 17</td><td>Headless Chrome → pages client</td></tr>
+  <tr><td><code>graph_tdt</code></td><td>29, 30</td><td>A produire par client</td></tr>
+  <tr><td><code>linkedin_profiles</code></td><td>29, 30</td><td>Screenshots profils cibles</td></tr>
+</table>
+</body></html>
