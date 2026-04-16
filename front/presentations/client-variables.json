@@ -1,0 +1,267 @@
+{
+  "_schema": "Variables de personnalisation — Growth Plan Bulldozer",
+  "_usage": "Remplir ce fichier par client, puis injecter dans template.html pour générer la présentation",
+
+  "identity": {
+    "client_name": "",
+    "client_slug": "",
+    "client_url": "",
+    "client_logo_url": "",
+    "client_screenshot": "assets/clients/{{client_slug}}/screen_{{client_slug}}.png"
+  },
+
+  "contexte": {
+    "entreprise": "",
+    "enjeux": "",
+    "challenges": [
+      {"num": 1, "title": "Acquisition", "text": ""},
+      {"num": 2, "title": "Structuration", "text": ""},
+      {"num": 3, "title": "Exécution", "text": ""}
+    ]
+  },
+
+  "audit_demand_capture": {
+    "geo": {
+      "note": "",
+      "summary": "",
+      "scores": {
+        "visibilite": {"note": "", "detail": ""},
+        "trafic": {"note": "", "detail": ""},
+        "contenu": {"note": "", "detail": ""},
+        "technique": {"note": "", "detail": ""},
+        "autorite": {"note": "", "detail": ""},
+        "opportunites": {"note": "", "detail": ""}
+      }
+    },
+    "seo": {
+      "note": "",
+      "summary": "",
+      "scores": {
+        "visibilite": {"note": "", "detail": ""},
+        "trafic": {"note": "", "detail": ""},
+        "contenu": {"note": "", "detail": ""},
+        "technique": {"note": "", "detail": ""},
+        "autorite": {"note": "", "detail": ""}
+      }
+    },
+    "sea": {
+      "note": "",
+      "summary": "",
+      "scores": {
+        "structure": {"note": "", "detail": ""},
+        "mots_cles": {"note": "", "detail": ""},
+        "annonces": {"note": "", "detail": ""},
+        "landing_pages": {"note": "", "detail": ""},
+        "performance": {"note": "", "detail": ""}
+      }
+    },
+    "cro": {
+      "note": "",
+      "summary": "",
+      "scores": {
+        "ergonomie": {"note": "", "detail": ""},
+        "message": {"note": "", "detail": ""},
+        "cta": {"note": "", "detail": ""},
+        "reassurance": {"note": "", "detail": ""}
+      }
+    }
+  },
+
+  "quick_wins_cro": [
+    {"title": "", "text": ""},
+    {"title": "", "text": ""},
+    {"title": "", "text": ""}
+  ],
+
+  "audit_demand_gen": {
+    "intro": "",
+    "leviers": [
+      {"name": "ABM / ABX", "text": ""},
+      {"name": "SMA & Paid Social", "text": ""},
+      {"name": "Content & Thought Leadership", "text": ""},
+      {"name": "Funnel & Nurturing", "text": ""}
+    ],
+    "sma_meta": {
+      "note": "",
+      "scores": {
+        "visibilite": {"note": "", "detail": ""},
+        "trafic": {"note": "", "detail": ""},
+        "contenu": {"note": "", "detail": ""},
+        "technique": {"note": "", "detail": ""},
+        "autorite": {"note": "", "detail": ""}
+      },
+      "limites": ""
+    },
+    "sma_linkedin": {
+      "note": "",
+      "scores": {
+        "visibilite": {"note": "", "detail": ""},
+        "trafic": {"note": "", "detail": ""},
+        "contenu": {"note": "", "detail": ""},
+        "technique": {"note": "", "detail": ""},
+        "autorite": {"note": "", "detail": ""}
+      },
+      "limites": ""
+    }
+  },
+
+  "tdt_config": {
+    "duree": "3 à 5 jours",
+    "budget": "1 500 à 2 500 €",
+    "equipe": "1 Growth Manager + 1 Designer"
+  },
+
+  "resultats_meta": {
+    "analyse_test": {
+      "budget": "",
+      "leads": "",
+      "leads_qualifies": "",
+      "cpl": "",
+      "cpl_qualifie": ""
+    },
+    "analyse_campagne": {
+      "best_pdv": "",
+      "cout_global": "",
+      "cout_best_pdv": ""
+    },
+    "insights": []
+  },
+
+  "resultats_linkedin": {
+    "analyse_test": {
+      "budget": "",
+      "leads": "",
+      "leads_qualifies": "",
+      "cpl": "",
+      "cpl_qualifie": ""
+    },
+    "analyse_campagne": {
+      "best_pdv": "",
+      "cout_global": "",
+      "cout_best_pdv": ""
+    },
+    "insights": [],
+    "resultats_detailles": {
+      "duree": "3 jours",
+      "budget_media": "",
+      "leads": "",
+      "cpl": "",
+      "mql": "",
+      "cout_mql": "",
+      "best_pdv": ""
+    }
+  },
+
+  "resultats_facebook": {
+    "duree": "3 jours",
+    "budget_media": "",
+    "leads": "",
+    "cpl": "",
+    "mql": "",
+    "cout_mql": "",
+    "best_pdv": ""
+  },
+
+  "plan_strategique": {
+    "phases": [
+      {
+        "num": 1,
+        "titre": "",
+        "periode": "",
+        "objectif": "",
+        "priorites": [],
+        "livrables": ""
+      },
+      {
+        "num": 2,
+        "titre": "",
+        "periode": "",
+        "objectif": "",
+        "priorites": [],
+        "livrables": ""
+      },
+      {
+        "num": 3,
+        "titre": "",
+        "periode": "",
+        "objectif": "",
+        "priorites": [],
+        "livrables": ""
+      }
+    ]
+  },
+
+  "equipe": {
+    "business_partner": {
+      "name": "Pierre-Arnaud Destremau",
+      "photo_url": ""
+    },
+    "head_of_growth": {
+      "photo_url": ""
+    },
+    "members": [
+      {"role": "Paid Manager", "subtitle": "", "photo_url": ""},
+      {"role": "SEO Expert", "subtitle": "", "photo_url": ""},
+      {"role": "Designer", "subtitle": "", "photo_url": ""}
+    ]
+  },
+
+  "pricing": {
+    "offer_title": "Growth Plan — 3 mois",
+    "phase_title": "",
+    "roles": [
+      {"name": "Head of Growth", "setup": null, "monthly": "", "subtotal": ""},
+      {"name": "Paid Manager", "setup": null, "monthly": "", "subtotal": ""},
+      {"name": "SEO Expert", "setup": null, "monthly": "", "subtotal": ""},
+      {"name": "Designer", "setup": null, "monthly": "", "subtotal": ""},
+      {"name": "GTM Engineer", "setup": "", "monthly": null, "subtotal": ""}
+    ],
+    "total": "",
+    "ventilation": {
+      "mois_labels": ["", "", ""],
+      "lignes": [
+        {
+          "phase": "",
+          "items": [
+            {"statut": "obligatoire", "element": "", "mois": ["", "", ""], "subtotal": ""}
+          ]
+        }
+      ],
+      "total_par_mois": ["", "", ""],
+      "total_general": ""
+    }
+  },
+
+  "projections": {
+    "pessimiste": {
+      "cout_mql": "",
+      "conversion": "",
+      "panier_moyen": "",
+      "duree": "12 mois",
+      "budget_media": "",
+      "mql_generes": "",
+      "clients_generes": "",
+      "arr": ""
+    },
+    "realiste": {
+      "cout_mql": "",
+      "conversion": "",
+      "panier_moyen": "",
+      "duree": "12 mois",
+      "budget_media": "",
+      "mql_generes": "",
+      "clients_generes": "",
+      "arr": ""
+    },
+    "optimiste": {
+      "cout_mql": "",
+      "conversion": "",
+      "panier_moyen": "",
+      "duree": "12 mois",
+      "budget_media": "",
+      "mql_generes": "",
+      "clients_generes": "",
+      "arr": ""
+    }
+  }
+}
