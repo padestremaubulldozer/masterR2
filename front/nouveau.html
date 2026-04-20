@@ -399,7 +399,8 @@ const STEPS = [
   {n:1,label:'Client',           desc:'Nom & URL Claap R1'},
   {n:2,label:'Leviers',          desc:'Sélectionner & valider'},
   {n:3,label:'Review',           desc:'Générer, vérifier, affiner'},
-  {n:4,label:'Canva',            desc:'Injecter dans la présentation'},
+  {n:4,label:'Pricing',          desc:'Construire le devis avec Claude'},
+  {n:5,label:'Générer',           desc:'Générer la présentation HTML'},
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1559,6 +1560,182 @@ function Step3Review({toastFn}) {
    - Mode done : résumé + boutons recopier/ouvrir Canva/terminer
    Le prompt Canva est copié dans le presse-papier au lancement.
    ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   ÉTAPE 4 : Pricing (construction du devis avec Claude)
+   - Grand champ texte pour décrire le besoin pricing
+   - Claude génère la proposition, l'utilisateur valide/ajuste
+   - Le résultat est stocké dans state.pricing et state.pricingDetails
+   ═══════════════════════════════════════════════════════════════════════════ */
+function StepPricing({toastFn}) {
+  const {state,dispatch,readOnly}=useR2();
+  const [prompt, setPrompt] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [roles, setRoles] = useState([
+    {name:'Head of Growth', setup:'—', monthly:'XXX € HT', subtotal:'XXX € HT'},
+    ...(state.activeLevers.includes('SEO')?[{name:'SEO Expert', setup:'—', monthly:'XXX € HT', subtotal:'XXX € HT'}]:[]),
+    ...(state.activeLevers.some(l=>l.includes('Ads'))?[{name:'Paid Manager', setup:'—', monthly:'XXX € HT', subtotal:'XXX € HT'}]:[]),
+    {name:'Designer', setup:'—', monthly:'XXX € HT', subtotal:'XXX € HT'},
+    {name:'GTM Engineer', setup:'XXX € HT', monthly:'—', subtotal:'XXX € HT'},
+  ]);
+  const [totalStr, setTotalStr] = useState('XXX € HT');
+  const [phaseTitle, setPhaseTitle] = useState('Phase 1 : Growth Plan — 3 mois');
+  const chatRef = useRef(null);
+
+  useEffect(()=>{if(chatRef.current)chatRef.current.scrollTop=chatRef.current.scrollHeight;},[messages]);
+
+  function parseRolesFromResponse(text) {
+    // Parse markdown table from Claude response
+    const lines = text.split('\n').filter(l => l.includes('|') && !l.includes('---'));
+    const dataLines = lines.filter(l => !l.match(/Rôle|Element|setup/i));
+    const parsed = [];
+    let total = '';
+    for (const line of dataLines) {
+      const cols = line.split('|').map(c => c.trim()).filter(Boolean);
+      if (cols.length >= 4) {
+        if (cols[0].replace(/\*/g,'').toUpperCase().includes('TOTAL')) {
+          total = cols[cols.length-1].replace(/\*/g,'').trim();
+        } else if (cols[0] && !cols[0].includes('---')) {
+          parsed.push({name:cols[0].replace(/\*/g,''), setup:cols[1]||'—', monthly:cols[2]||'—', subtotal:cols[3]||'—'});
+        }
+      }
+    }
+    if (parsed.length > 0) { setRoles(parsed); }
+    if (total) { setTotalStr(total); dispatch({t:'SET',k:'pricing',v:total}); }
+    // Extract phase title
+    const phaseMatch = text.match(/##[^#]*?(Phase[^\n]*)/i) || text.match(/(Phase \d[^\n]*)/i);
+    if (phaseMatch) setPhaseTitle(phaseMatch[1].replace(/\*/g,'').trim());
+  }
+
+  async function sendMessage() {
+    if (!prompt.trim()||loading) return;
+    const userMsg = prompt.trim();
+    setPrompt('');
+    setMessages(prev=>[...prev,{role:'user',text:userMsg}]);
+    setLoading(true);
+    try {
+      const res = await fetch('/api/presentations/'+state.id+'/generate-pricing',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({userMessage:userMsg, history:messages}),
+      });
+      const data = await res.json();
+      setMessages(prev=>[...prev,{role:'assistant',text:data.response}]);
+      parseRolesFromResponse(data.response);
+    } catch {
+      setMessages(prev=>[...prev,{role:'assistant',text:'Erreur de connexion. Réessayez.'}]);
+    }
+    setLoading(false);
+  }
+
+  // Slide preview — exact same styles as template.html slide P34
+  const slidePreview = (
+    <div style={{background:'#0A0A0A',borderRadius:12,padding:'24px 28px',border:'1px solid rgba(255,255,255,.06)',position:'relative',overflow:'hidden'}}>
+      <div style={{fontFamily:'"Space Mono",monospace',fontSize:10,color:'#DDFF56',textTransform:'uppercase',letterSpacing:'.15em',marginBottom:4}}>Offre</div>
+      <div style={{fontSize:20,fontWeight:700,color:'#F5F5F3',letterSpacing:'-.02em',marginBottom:16}}>Growth Plan — {state.clientName||'Client'}</div>
+      <div style={{fontSize:12,fontWeight:600,color:'#F5F5F3',marginBottom:8}}>{phaseTitle}</div>
+      <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr',gap:'0',fontSize:12}}>
+        {/* Header */}
+        <div style={{color:'#DDFF56',fontWeight:600,borderBottom:'1px solid rgba(255,255,255,.1)',padding:'6px 0'}}>Élément</div>
+        <div style={{color:'#DDFF56',fontWeight:600,borderBottom:'1px solid rgba(255,255,255,.1)',padding:'6px 0',textAlign:'right'}}>Setup</div>
+        <div style={{color:'#DDFF56',fontWeight:600,borderBottom:'1px solid rgba(255,255,255,.1)',padding:'6px 0',textAlign:'right'}}>Run / mois</div>
+        <div style={{color:'#DDFF56',fontWeight:600,borderBottom:'1px solid rgba(255,255,255,.1)',padding:'6px 0',textAlign:'right'}}>Sous-total</div>
+        {/* Rows */}
+        {roles.map((r,i)=>(
+          <React.Fragment key={i}>
+            <div style={{color:'rgba(255,255,255,.6)',padding:'5px 0'}}>{r.name}</div>
+            <div style={{color:'rgba(255,255,255,.4)',textAlign:'right',padding:'5px 0'}}>{r.setup}</div>
+            <div style={{color:'rgba(255,255,255,.4)',textAlign:'right',padding:'5px 0'}}>{r.monthly}</div>
+            <div style={{color:'#F5F5F3',textAlign:'right',padding:'5px 0',fontWeight:500}}>{r.subtotal}</div>
+          </React.Fragment>
+        ))}
+        {/* Total */}
+        <div style={{color:'#DDFF56',fontWeight:700,padding:'8px 0',borderTop:'1px solid rgba(255,255,255,.1)'}}>TOTAL</div>
+        <div style={{borderTop:'1px solid rgba(255,255,255,.1)',padding:'8px 0'}}/>
+        <div style={{borderTop:'1px solid rgba(255,255,255,.1)',padding:'8px 0'}}/>
+        <div style={{color:'#DDFF56',fontWeight:700,textAlign:'right',borderTop:'1px solid rgba(255,255,255,.1)',padding:'8px 0'}}>{totalStr}</div>
+      </div>
+      <div style={{fontSize:10,color:'rgba(255,255,255,.25)',marginTop:10}}>*Engagement minimum 3 mois. Budget média non inclus.</div>
+    </div>
+  );
+
+  return (
+    <div style={{padding:'48px 48px',minHeight:'100%',display:'flex',flexDirection:'column'}}>
+      <div style={{marginBottom:20}}>
+        <h1 style={{fontSize:22,fontWeight:800,margin:0,letterSpacing:'-0.02em'}}>
+          Pricing — <span style={{color:'var(--accent)'}}>{state.clientName||'Client'}</span>
+        </h1>
+        <p style={{color:'var(--text-3)',marginTop:6,fontSize:15}}>Construisez le devis avec Claude. Le tableau se met à jour en temps réel.</p>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,flex:1,minHeight:0}}>
+        {/* LEFT — Slide preview */}
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <div style={{fontSize:11,fontWeight:700,color:'var(--text-3)',textTransform:'uppercase',letterSpacing:'.08em'}}>Aperçu slide finale</div>
+          {slidePreview}
+          <div style={{display:'flex',gap:8,marginTop:8}}>
+            {roles.map((r,i)=>(
+              <div key={i} style={{flex:1,background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:6,padding:'6px 8px',fontSize:11}}>
+                <div style={{fontWeight:600,color:'var(--text)',marginBottom:2}}>{r.name}</div>
+                <div style={{color:'var(--text-3)'}}>{r.monthly !== '—' ? r.monthly+'/m' : r.setup+' setup'}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* RIGHT — Chat */}
+        <div style={{display:'flex',flexDirection:'column',minHeight:0}}>
+          <div style={{fontSize:11,fontWeight:700,color:'var(--text-3)',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:8}}>Discussion avec Claude</div>
+          <div ref={chatRef} style={{flex:1,overflowY:'auto',display:'flex',flexDirection:'column',gap:8,marginBottom:12,minHeight:200,maxHeight:'50vh'}}>
+            {messages.length===0&&(
+              <div style={{textAlign:'center',padding:'40px 16px',color:'var(--text-3)'}}>
+                <div style={{fontSize:32,marginBottom:8}}>💬</div>
+                <div style={{fontSize:14,fontWeight:600}}>Décrivez votre besoin</div>
+                <div style={{fontSize:12,marginTop:4}}>Ex: "Growth 3 mois, SEO + Paid, 15K/mois"</div>
+              </div>
+            )}
+            {messages.map((m,i)=>(
+              <div key={i} style={{
+                alignSelf:m.role==='user'?'flex-end':'flex-start',
+                maxWidth:'85%',
+                background:m.role==='user'?'var(--accent)':'var(--bg-card)',
+                color:m.role==='user'?'#000':'var(--text)',
+                border:m.role==='assistant'?'1px solid var(--border)':'none',
+                borderRadius:m.role==='user'?'12px 12px 2px 12px':'12px 12px 12px 2px',
+                padding:'10px 14px',fontSize:13,lineHeight:1.6,whiteSpace:'pre-wrap'}}>
+                {m.text}
+              </div>
+            ))}
+            {loading&&<div style={{alignSelf:'flex-start',padding:'10px 14px',fontSize:13,color:'var(--text-3)',background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:'12px 12px 12px 2px'}}>Claude réfléchit…</div>}
+          </div>
+          <div style={{display:'flex',gap:8}}>
+            <textarea value={prompt} onChange={e=>setPrompt(e.target.value)}
+              onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}}
+              placeholder="Décrivez le pricing… (Entrée pour envoyer)"
+              disabled={readOnly||loading}
+              style={{flex:1,background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:10,padding:'10px 14px',
+                color:'var(--text)',fontSize:13,fontFamily:'inherit',resize:'none',minHeight:42,maxHeight:100,outline:'none'}}
+              rows={1}/>
+            <button onClick={sendMessage} disabled={!prompt.trim()||loading}
+              style={{background:'var(--accent)',color:'#000',border:'none',borderRadius:10,padding:'10px 18px',
+                fontWeight:700,fontSize:13,cursor:'pointer',opacity:(!prompt.trim()||loading)?0.4:1,flexShrink:0}}>
+              ↑
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation bar */}
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'16px 0',borderTop:'1px solid var(--border)',marginTop:16}}>
+        <button className="btn-g" onClick={()=>dispatch({t:'STEP',n:3})}>← Review</button>
+        <button className="btn-p" onClick={()=>dispatch({t:'STEP',n:5})}
+          style={{padding:'10px 24px'}}>
+          Générer la présentation →
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** Composant DiffSection — section collapsible dans la vue diff de l'etape Canva.
     Affiche un en-tete cliquable (titre + tag levier optionnel) et un contenu
     monospace avec les lignes de diff (vert = ajout, rouge = suppression).
@@ -1638,34 +1815,36 @@ function StepCanva({toastFn}) {
      5. Suppression des slides desactivees
      6. Verification finale de coherence
      Le JSON complet est inclus a la fin pour reference. */
-  const canvaPrompt=`Tu es un assistant qui met à jour une présentation Canva pour Bulldozer Collective.
+  const slug = (state.clientName||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+  const canvaPrompt=`Tu es un assistant qui met à jour la présentation HTML R2 pour Bulldozer Collective.
+Le template HTML est figé (interdit de modifier le code). Tu ne remplis que les variables texte.
 
 ## Présentation cible
 - Client : ${state.clientName}
-- URL Canva : ${state.canvaUrl || 'Template ID: ' + state.canvaTemplateId}
+- Fichier HTML : presentations/${slug}.html (généré depuis template.html)
 - Business Partner : ${state.bp}
 
-## Actions à réaliser (dans l'ordre)
+## Ce qui est déjà fait (déterministe)
+- template.html dupliqué → ${slug}.html
+- XXX remplacé par "${state.clientName}" (32 occurrences)
+- Screenshots assets/clients/${slug}/ créés
+- Les 26 slides figées sont intactes
 
-### 1. Dupliquer le template
-Utilise le MCP Canva pour dupliquer le design source et travailler sur la copie.
+## Variables à compléter (probabiliste)
 
-### 2. Find & Replace
-Remplace toutes les occurrences de "XXX" par "${state.clientName}" dans l'ensemble de la présentation.
+### 1. Contexte client (slide 9)
+${json.content.context_summary.entreprise ? '- Entreprise : ' + json.content.context_summary.entreprise : '- Entreprise : (à rédiger)'}
+${json.content.context_summary.enjeux ? '- Enjeux : ' + json.content.context_summary.enjeux : '- Enjeux : (à rédiger)'}
+${json.content.context_summary.challenges ? '- Challenges : ' + json.content.context_summary.challenges : '- Challenges : (à rédiger)'}
 
-### 3. Injection du contexte client (slides ~8-9)
-${json.content.context_summary.entreprise ? '- Entreprise : ' + json.content.context_summary.entreprise : '- Entreprise : (vide)'}
-${json.content.context_summary.enjeux ? '- Enjeux : ' + json.content.context_summary.enjeux : '- Enjeux : (vide)'}
-${json.content.context_summary.challenges ? '- Challenges : ' + json.content.context_summary.challenges : '- Challenges : (vide)'}
-
-### 4. Injection des analyses par levier
+### 2. Analyses par levier
 ${state.activeLevers.map(l=>{const a=json.content.analyses[l];if(!a)return `#### ${l}\n(non générée)`;return `#### ${l} — Note : ${a.note_globale}/10\nLecture business : ${a.lecture_business}\n${a.sous_scores.map(ss=>`- ${ss.nom} : ${ss.note}/10 — ${ss.description}`).join('\n')}`;}).join('\n\n')}
 
-### 5. Slides à supprimer
+### 3. Slides à supprimer
 ${inactiveList}
 
-### 6. Vérification finale
-Vérifie que toutes les slides sont cohérentes, qu'il n'y a plus de "XXX" et que les notes sont bien injectées.
+### 4. Vérification finale
+Vérifie qu'il n'y a plus de placeholder, que les notes sont injectées, et que le HTML s'affiche correctement.
 
 ## JSON complet
 \`\`\`json
@@ -1678,13 +1857,14 @@ ${jsonStr}
      Le TDT (test de traction) n'est inclus que s'il est actif. */
   const tasks=[
     {label:'Recherche d\'une présentation existante',    icon:'🔎'},
-    {label:`Duplication du template → ${state.clientName || 'Présentation R2'}`, icon:'📄'},
+    {label:`Duplication template.html → ${slug}.html`, icon:'📄'},
     {label:`Find & Replace "XXX" → "${state.clientName}"`, icon:'🔤'},
-    {label:'Injection du contexte client (slide 9)',  icon:'📋'},
+    {label:'Capture screenshot site client',           icon:'📸'},
+    {label:'Injection du contexte client (slide 9)',   icon:'📋'},
     ...state.activeLevers.map(l=>({label:`Injection analyse ${l}`, icon:LEVER_ICONS[l]||'📊', lever:l})),
     ...(!state.inactiveSections.includes('test_traction')?[{label:'Injection du Test de traction', icon:'🧪'}]:[]),
-    {label:'Suppression des slides désactivées',      icon:'✂️'},
-    {label:'Vérification finale de cohérence',        icon:'✅'},
+    {label:'Suppression des slides désactivées',       icon:'✂️'},
+    {label:'Vérification finale de cohérence',         icon:'✅'},
   ];
 
   const STEP_DURATION=4000; // Duree de chaque tache animee en ms
@@ -1761,9 +1941,9 @@ ${jsonStr}
     <div style={{padding:'48px 48px',minHeight:'100%',display:'flex',flexDirection:'column'}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:24}}>
         <div>
-          <h1 style={{fontSize:22,fontWeight:800,margin:0,letterSpacing:'-0.02em',display:'flex',alignItems:'center',gap:10}}>{state.clientWebsiteUrl&&logoUrl(state.clientWebsiteUrl)&&<img src={logoUrl(state.clientWebsiteUrl)} alt="" style={{width:24,height:24,borderRadius:5,objectFit:'contain',background:'#fff'}} onError={e=>{e.target.style.display='none';}}/>}{state.clientName ? <>Canva — <span style={{color:'var(--accent)'}}>{state.clientName}</span></> : 'Canva'}</h1>
+          <h1 style={{fontSize:22,fontWeight:800,margin:0,letterSpacing:'-0.02em',display:'flex',alignItems:'center',gap:10}}>{state.clientWebsiteUrl&&logoUrl(state.clientWebsiteUrl)&&<img src={logoUrl(state.clientWebsiteUrl)} alt="" style={{width:24,height:24,borderRadius:5,objectFit:'contain',background:'#fff'}} onError={e=>{e.target.style.display='none';}}/>}{state.clientName ? <>Génération — <span style={{color:'var(--accent)'}}>{state.clientName}</span></> : 'Génération'}</h1>
           <p style={{color:'var(--text-3)',marginTop:6,fontSize:15,margin:'6px 0 0'}}>
-            {phase==='idle'?'Injectez le contenu validé dans la présentation Canva.':phase==='done'?'Injection terminée.':'Injection en cours...'}
+            {phase==='idle'?'Générez la présentation HTML avec le contenu validé.':phase==='done'?'Génération terminée.':'Génération en cours...'}
           </p>
         </div>
         {phase!=='idle'&&(
@@ -1816,7 +1996,7 @@ ${jsonStr}
                   {done:true,  label:'Analyses par levier complétées'},
                   {done:true,  label:'Screenshots préaudit capturés'},
                   {done:false, label:'Choisir les use cases (×6)'},
-                  {done:false, label:'Importer les screenshots dans Canva'},
+                  {done:true,  label:'Screenshots intégrés dans la présentation HTML'},
                   {done:false, label:'Compléter pricing & projection (manuel)'},
                   {done:false, label:'Relecture finale'},
                   {done:true,  label:'Date R2 & next steps (via Claap R1)'},
@@ -1833,55 +2013,38 @@ ${jsonStr}
                 ))}
               </div>
 
-              {/* Screenshots du préaudit — générés automatiquement par Claude */}
+              {/* Présentation HTML générée — lien direct */}
               <div style={{borderTop:'1px solid var(--border)',paddingTop:10,marginTop:10}}>
-                <div style={{fontSize:11,color:'var(--text-3)',textTransform:'uppercase',letterSpacing:'0.07em',marginBottom:6}}>Screenshots préaudit</div>
-                <p style={{fontSize:12,color:'var(--text-3)',margin:'0 0 8px'}}>Les screenshots du préaudit ont été générés automatiquement. Téléchargez-les pour les importer dans Canva.</p>
-                <button className="btn-p" style={{width:'100%',justifyContent:'center',marginBottom:10}} onClick={async()=>{
-                  toastFn('Téléchargement en cours…');
-                  try {
-                    const files=[
-                      {name:'screenshot-SEO.png', url:'slides-thumbs/00-screenshot-SEO.png'},
-                      {name:'screenshot-SEA.png', url:'slides-thumbs/00-screenshot-SEA.png'},
-                      {name:'screenshot-linkedin.png', url:'slides-thumbs/00-screenshot-linkedin.png'},
-                    ];
-                    const JSZip=(await import('https://cdn.jsdelivr.net/npm/jszip@3/dist/jszip.min.js')).default||window.JSZip;
-                    const zip=new JSZip();
-                    for(const f of files){
-                      const resp=await fetch(f.url);
-                      const blob=await resp.blob();
-                      zip.file(f.name,blob);
-                    }
-                    const content=await zip.generateAsync({type:'blob'});
-                    const url=URL.createObjectURL(content);
-                    window.open(url,'_blank');
-                    toastFn('ZIP téléchargé');
-                  }catch(e){
-                    // Fallback : télécharger les images une par une
-                    ['slides-thumbs/00-screenshot-SEO.png','slides-thumbs/00-screenshot-SEA.png','slides-thumbs/00-screenshot-linkedin.png'].forEach(url=>{
-                      const a=document.createElement('a');a.href=url;a.download=url.split('/').pop();a.click();
-                    });
-                    toastFn('Screenshots téléchargés (individuellement)');
-                  }
-                }}>
-                  Télécharger les screenshots (.zip)
-                </button>
-                {/* Aperçu des screenshots réels du préaudit Bulldozer */}
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:6}}>
-                  {[
-                    {label:'SEO',lever:'SEO',src:'slides-thumbs/00-screenshot-SEO.png'},
-                    {label:'SEA',lever:'Google Ads',src:'slides-thumbs/00-screenshot-SEA.png'},
-                    {label:'LinkedIn',lever:'LinkedIn Ads',src:'slides-thumbs/00-screenshot-linkedin.png'},
-                  ].map(s=>{
-                    const lc=LEVER_COLORS[s.lever]||{bg:'#555',color:'#fff'};
-                    return (
-                      <div key={s.label} style={{position:'relative'}}>
-                        <img src={s.src} alt={s.label} style={{width:'100%',borderRadius:5,border:'1px solid var(--border)',display:'block'}}/>
-                        <span style={{position:'absolute',bottom:3,left:3,fontSize:8,fontWeight:700,padding:'1px 4px',borderRadius:3,background:lc.bg,color:lc.color,fontFamily:'monospace'}}>{s.label}</span>
+                <div style={{fontSize:11,color:'var(--text-3)',textTransform:'uppercase',letterSpacing:'0.07em',marginBottom:6}}>Présentation HTML</div>
+                <p style={{fontSize:12,color:'var(--text-3)',margin:'0 0 8px'}}>La présentation HTML est générée automatiquement avec tous les screenshots intégrés. Plus besoin de télécharger et importer dans Canva.</p>
+                {(()=>{
+                  const slug = (state.clientName||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+                  const htmlUrl = `presentations/${slug}.html`;
+                  return (<>
+                    <a href={htmlUrl} target="_blank" className="btn-p" style={{width:'100%',justifyContent:'center',marginBottom:8,textDecoration:'none',display:'flex'}}>
+                      Ouvrir la présentation HTML ↗
+                    </a>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}}>
+                      <a href={htmlUrl} target="_blank" style={{textDecoration:'none'}}>
+                        <div style={{background:'var(--bg)',border:'1px solid var(--border)',borderRadius:6,padding:'10px 12px',display:'flex',alignItems:'center',gap:8}}>
+                          <span style={{fontSize:20}}>🖥️</span>
+                          <div>
+                            <div style={{fontSize:12,fontWeight:600,color:'var(--text)'}}>Présenter</div>
+                            <div style={{fontSize:11,color:'var(--text-3)'}}>Ouvrir en plein écran</div>
+                          </div>
+                        </div>
+                      </a>
+                      <div style={{background:'var(--bg)',border:'1px solid var(--border)',borderRadius:6,padding:'10px 12px',display:'flex',alignItems:'center',gap:8,cursor:'pointer'}}
+                        onClick={()=>{window.open(htmlUrl+'#print','_blank');toastFn('Impression lancée');}}>
+                        <span style={{fontSize:20}}>📄</span>
+                        <div>
+                          <div style={{fontSize:12,fontWeight:600,color:'var(--text)'}}>Exporter PDF</div>
+                          <div style={{fontSize:11,color:'var(--text-3)'}}>Via le bouton Download</div>
+                        </div>
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                  </>);
+                })()}
               </div>
             </div>
 
@@ -1971,14 +2134,14 @@ ${jsonStr}
           {/* Barre d'actions : navigation + CTA Canva */}
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'16px 0',borderBottom:'1px solid var(--border)',marginBottom:16}}>
             <div style={{display:'flex',gap:8}}>
-              <button className="btn-g" onClick={()=>dispatch({t:'STEP',n:3})}>← Review</button>
+              <button className="btn-g" onClick={()=>dispatch({t:'STEP',n:4})}>← Pricing</button>
               <button className="btn-g" onClick={()=>{upsert({...state,status:'brouillon'});window.location.href='index.html';}}>Enregistrer et quitter</button>
             </div>
             <div style={{display:'flex',gap:8,alignItems:'center'}}>
               {!isComplete&&<span style={{fontSize:13,fontWeight:600,color:'var(--error)',background:'rgba(255,69,58,0.1)',padding:'5px 14px',borderRadius:6,display:'inline-flex',alignItems:'center',gap:8}}>Contenu incomplet <a onClick={()=>dispatch({t:'STEP',n:3})} style={{color:'var(--accent)',textDecoration:'underline',cursor:'pointer',fontWeight:700,fontSize:14}}>Corriger</a></span>}
               <button className="btn-p" onClick={launch} disabled={!isComplete||readOnly}
                 style={{padding:'10px 24px',boxShadow:isComplete?'0 0 20px rgba(212,255,0,0.15)':'none'}}>
-                {history.length>0?'Mettre à jour dans Canva':'Générer dans Canva'}
+                {history.length>0?'Regénérer le HTML':'Générer la présentation'}
               </button>
             </div>
           </div>
@@ -2397,7 +2560,8 @@ function App() {
             {state.currentStep===1&&fetching&&<FetchingScreen clientName={state.clientName} claapUrl={state.claapUrl} onDone={()=>{setFetching(false);dispatch({t:'STEP',n:2});}}/>}
             {state.currentStep===2&&<Step2/>}
             {state.currentStep===3&&<Step3Review toastFn={show}/>}
-            {state.currentStep===4&&<StepCanva toastFn={show}/>}
+            {state.currentStep===4&&<StepPricing toastFn={show}/>}
+            {state.currentStep===5&&<StepCanva toastFn={show}/>}
           </main>
         </div>
       </div>

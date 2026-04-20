@@ -1,15 +1,22 @@
 require('dotenv').config();
+const path = require('path');
 
 module.exports = {
   development: {
-    client: 'pg',
-    connection: process.env.DATABASE_URL,
+    client: 'better-sqlite3',
+    connection: {
+      filename: path.join(__dirname, 'data', 'masterr2.sqlite3'),
+    },
+    useNullAsDefault: true,
     migrations: { directory: './migrations' },
     seeds: { directory: './seeds' },
   },
   test: {
-    client: 'pg',
-    connection: process.env.DATABASE_URL_TEST,
+    client: 'better-sqlite3',
+    connection: {
+      filename: path.join(__dirname, 'data', 'masterr2_test.sqlite3'),
+    },
+    useNullAsDefault: true,
     migrations: { directory: './migrations' },
     seeds: { directory: './seeds' },
   },

@@ -372,6 +372,8 @@ function App() {
   // currentUser / currentUserBp : utilisateur connecte et ses infos BP (depuis les parametres)
   const [currentUser, setCU]    = useState(null);
   const [currentUserBp, setCUBp]= useState(null);
+  // selected : Set d'ids cochés pour la suppression multiple
+  const [selected, setSelected] = useState(new Set());
   // openMenu : id de la présentation dont le menu burger est ouvert (null = tous fermés)
   const [openMenu, setOpenMenu] = useState(null);
   // shareMenu : id de la prez dont le sous-menu "Partager" est ouvert
@@ -399,6 +401,44 @@ function App() {
     const d = await apiFetchPresentations();
     setPres(d);
     setOpenMenu(null);
+  }
+
+  function toggleSelect(id, e) {
+    e.stopPropagation();
+    setSelected(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+  function toggleSelectAll(e) {
+    e.stopPropagation();
+    if (selected.size === filtered.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(filtered.map(p => p.id)));
+    }
+  }
+  async function bulkDelete() {
+    if (!selected.size) return;
+    if (!confirm(`Supprimer ${selected.size} présentation(s) ?`)) return;
+    // Animate rows out
+    selected.forEach(id => {
+      const row = document.querySelector(`tr[data-id="${id}"]`);
+      if (row) {
+        row.style.transition = 'all .35s cubic-bezier(.4,0,.2,1)';
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(-40px)';
+        row.style.maxHeight = row.offsetHeight + 'px';
+        requestAnimationFrame(() => { row.style.maxHeight = '0'; row.style.padding = '0'; row.style.margin = '0'; row.style.overflow = 'hidden'; });
+      }
+    });
+    // Wait for animation, then delete + update state
+    setTimeout(async () => {
+      await apiBulkDeletePresentations([...selected]);
+      setPres(prev => prev.filter(p => !selected.has(p.id)));
+      setSelected(new Set());
+    }, 400);
   }
 
   /** Supprime une presentation apres confirmation utilisateur.
@@ -603,11 +643,17 @@ function App() {
             <div className="top-sub">Historique de toutes les présentations générées par les Business Partners</div>
           </div>
           <div style={{display:'flex',alignItems:'center',gap:16}}>
-            <div style={{display:'flex',gap:14,alignItems:'center'}}>
-              <span style={{fontSize:14,color:'var(--text-3)'}}><strong style={{fontSize:16,color:'var(--text)'}}>{nTotal}</strong> Total</span>
-              <span style={{fontSize:14,color:'var(--text-3)'}}><strong style={{fontSize:16,color:'#FF9F0A'}}>{nCours}</strong> En cours</span>
-              <span style={{fontSize:14,color:'var(--text-3)'}}><strong style={{fontSize:16,color:'#32D74B'}}>{nTermine}</strong> Terminées</span>
-            </div>
+            {selected.size > 0 ? (
+              <button onClick={bulkDelete} style={{background:'#ff4444',color:'#fff',border:'none',borderRadius:8,padding:'8px 18px',fontSize:14,fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',gap:6}}>
+                🗑 Supprimer ({selected.size})
+              </button>
+            ) : (
+              <div style={{display:'flex',gap:14,alignItems:'center'}}>
+                <span style={{fontSize:14,color:'var(--text-3)'}}><strong style={{fontSize:16,color:'var(--text)'}}>{nTotal}</strong> Total</span>
+                <span style={{fontSize:14,color:'var(--text-3)'}}><strong style={{fontSize:16,color:'#FF9F0A'}}>{nCours}</strong> En cours</span>
+                <span style={{fontSize:14,color:'var(--text-3)'}}><strong style={{fontSize:16,color:'#32D74B'}}>{nTermine}</strong> Terminées</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -639,6 +685,7 @@ function App() {
               <div className="tbl-scroll"><table>
                 <thead>
                   <tr>
+                    <th style={{width:36}} onClick={e=>e.stopPropagation()}><input type="checkbox" checked={selected.size===filtered.length&&filtered.length>0} onChange={toggleSelectAll} style={{cursor:'pointer',width:16,height:16,accentColor:'#D4FF00'}}/></th>
                     <th>Création</th>
                     <th>Client</th>
                     <th>Business Partner</th>
@@ -654,7 +701,8 @@ function App() {
                     Les cellules statut et actions utilisent stopPropagation pour eviter la navigation au clic. */}
                 <tbody>
                   {filtered.map(p => (
-                    <tr key={p.id} onClick={()=>window.location.href=`nouveau.html?id=${p.id}`}>
+                    <tr key={p.id} data-id={p.id} onClick={()=>window.location.href=`nouveau.html?id=${p.id}`} style={{background:selected.has(p.id)?'rgba(212,255,0,0.06)':'transparent',transition:'all .3s ease'}}>
+                      <td onClick={e=>e.stopPropagation()} style={{width:36}}><input type="checkbox" checked={selected.has(p.id)} onChange={e=>toggleSelect(p.id,e)} style={{cursor:'pointer',width:16,height:16,accentColor:'#D4FF00'}}/></td>
                       <td style={{color:'var(--text-2)',fontSize:14,whiteSpace:'nowrap'}}>{fmtDate(p.createdAt)}</td>
                       {/* Cellule Client : logo via Clearbit API + nom + URL.
                           Le logo est charge a partir du domaine du site client

@@ -209,6 +209,13 @@ async function apiDeletePresentation(id) {
   return apiFetch(`/presentations/${id}`, { method: 'DELETE' });
 }
 
+async function apiBulkDeletePresentations(ids) {
+  return apiFetch('/presentations/bulk-delete', {
+    method: 'POST',
+    body: JSON.stringify({ ids }),
+  });
+}
+
 async function apiUpsertAnalysis(presId, lever, analysis) {
   return apiFetch(`/presentations/${presId}/analyses/${encodeURIComponent(lever)}`, {
     method: 'PUT',

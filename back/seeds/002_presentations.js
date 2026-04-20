@@ -69,7 +69,7 @@ exports.seed = async function (knex) {
   for (const p of PRESENTATIONS) {
     const [inserted] = await knex('presentations').insert({
       ...p,
-      active_levers: `{${p.active_levers.map(l => `"${l}"`).join(',')}}`,
+      active_levers: JSON.stringify(p.active_levers),
     }).returning('*');
 
     const analyses = ANALYSES[p.num];

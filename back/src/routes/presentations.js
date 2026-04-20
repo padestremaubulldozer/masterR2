@@ -1,6 +1,67 @@
 const express = require('express');
+const path = require('path');
+const fs = require('fs');
 const db = require('../db');
 const router = express.Router();
+
+// ── Template engine: duplicate template.html and fill variables ──
+const FRONT_DIR = process.env.FRONT_DIR || path.join(__dirname, '../../../front');
+const PRESENTATIONS_DIR = path.join(FRONT_DIR, 'presentations');
+const TEMPLATE_PATH = path.join(PRESENTATIONS_DIR, 'template.html');
+
+function slugify(name) {
+  return name.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_|_$/g, '');
+}
+
+function generatePresentation(clientName, slug, bpName) {
+  if (!fs.existsSync(TEMPLATE_PATH)) return null;
+  let html = fs.readFileSync(TEMPLATE_PATH, 'utf-8');
+
+  // 1. Replace XXX → client name (32 occurrences)
+  html = html.replace(/XXX/g, clientName);
+
+  // 2. Replace title
+  html = html.replace(
+    '<title>Bulldozer Growth Plan</title>',
+    `<title>Growth Plan — ${clientName} x Bulldozer</title>`
+  );
+
+  // 3. Replace screenshot paths (lotchi → client slug)
+  html = html.replace(/assets\/clients\/lotchi\/screen_lotchi\.png/g,
+    `assets/clients/${slug}/screen_${slug}.png`);
+
+  // 4. Replace BP name if provided
+  if (bpName) {
+    html = html.replace(/Pierre-Arnaud Destremau/g, bpName);
+  }
+
+  // 5. Create client assets directory
+  const clientAssetsDir = path.join(PRESENTATIONS_DIR, 'assets', 'clients', slug);
+  if (!fs.existsSync(clientAssetsDir)) {
+    fs.mkdirSync(clientAssetsDir, { recursive: true });
+  }
+
+  // 6. Write the file
+  const outputPath = path.join(PRESENTATIONS_DIR, `${slug}.html`);
+  fs.writeFileSync(outputPath, html, 'utf-8');
+
+  return `presentations/${slug}.html`;
+}
+
+// POST /api/presentations/bulk-delete — delete multiple (MUST be before :id routes)
+router.post('/bulk-delete', async (req, res, next) => {
+  try {
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'ids array required' });
+    }
+    const deleted = await db('presentations').whereIn('id', ids).del();
+    res.json({ deleted });
+  } catch (err) { next(err); }
+});
 
 // GET /api/presentations — list with optional filters
 router.get('/', async (req, res, next) => {
@@ -111,8 +172,8 @@ router.post('/', async (req, res, next) => {
       claap_url: b.claapUrl || null,
       pre_audit_url: b.preAuditUrl || null,
       active_levers: b.activeLevers
-        ? `{${b.activeLevers.map(l => `"${l}"`).join(',')}}`
-        : '{}',
+        ? JSON.stringify(b.activeLevers)
+        : '[]',
       pricing: b.pricing || null,
       date_r1: b.dateR1 || null,
       date_r2: b.dateR2 || null,
@@ -123,7 +184,15 @@ router.post('/', async (req, res, next) => {
       current_step: b.currentStep || 1,
     }).returning('*');
 
-    res.status(201).json({ id: row.id, num: row.num });
+    // Generate HTML from template
+    const slug = slugify(b.clientName);
+    const bp = await db('bps').where('id', b.bpId).first();
+    const htmlPath = generatePresentation(b.clientName, slug, bp?.name);
+    if (htmlPath) {
+      await db('presentations').where('id', row.id).update({ html_path: htmlPath });
+    }
+
+    res.status(201).json({ id: row.id, num: row.num, htmlPath });
   } catch (err) { next(err); }
 });
 
@@ -139,7 +208,7 @@ router.put('/:id', async (req, res, next) => {
     if (b.claapUrl !== undefined) updates.claap_url = b.claapUrl;
     if (b.preAuditUrl !== undefined) updates.pre_audit_url = b.preAuditUrl;
     if (b.activeLevers !== undefined) {
-      updates.active_levers = `{${b.activeLevers.map(l => `"${l}"`).join(',')}}`;
+      updates.active_levers = JSON.stringify(b.activeLevers);
     }
     if (b.pricing !== undefined) updates.pricing = b.pricing;
     if (b.dateR1 !== undefined) updates.date_r1 = b.dateR1;
@@ -231,6 +300,152 @@ router.delete('/:id', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+
+// POST /api/presentations/:id/generate-pricing — pricing via Claude LLM
+router.post('/:id/generate-pricing', async (req, res, next) => {
+  try {
+    const { userMessage, history } = req.body;
+    const pres = await db('presentations').where('id', req.params.id).first();
+    if (!pres) return res.status(404).json({ error: 'Presentation not found' });
+
+    const levers = JSON.parse(pres.active_levers || '[]');
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+
+    // Build system prompt
+    const systemPrompt = `Tu es un expert pricing Bulldozer Collective. Tu construis des devis Growth Plan R2.
+
+Contexte :
+- Client : ${pres.client_name}
+- Leviers actifs : ${levers.join(', ')}
+
+Règles pricing Bulldozer :
+- Format : phases de 3 mois minimum
+- Rôles types : Head of Growth, Paid Manager, SEO Expert, Designer, GTM Engineer
+- Setup initial + run mensuel
+- Budget média recommandé en sus
+- Engagement 3 mois fermes puis 3 mois reconductibles
+
+IMPORTANT : Réponds TOUJOURS avec un tableau markdown au format :
+| Rôle | Setup | Run / mois | Sous-total (3 mois) |
+Inclus une ligne **TOTAL** à la fin. Montants en € HT.`;
+
+    // Try Claude API
+    if (apiKey) {
+      try {
+        const messages = [
+          ...(history || []).map(m => ({ role: m.role, content: m.text })),
+          { role: 'user', content: userMessage },
+        ];
+
+        const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 2000,
+            system: systemPrompt,
+            messages,
+          }),
+        });
+
+        if (claudeRes.ok) {
+          const data = await claudeRes.json();
+          const response = data.content[0]?.text || '';
+          const totalMatch = response.match(/TOTAL.*?(\d[\d\s,.]*\s*€\s*HT)/i);
+          return res.json({
+            response,
+            pricing: totalMatch ? totalMatch[1].trim() : null,
+          });
+        }
+      } catch (err) {
+        console.error('Claude API error:', err.message);
+      }
+    }
+
+    // Smart local pricing engine — no API needed
+    const msg = (userMessage || '').toLowerCase();
+    const prevHistory = history || [];
+    const months = parseInt(msg.match(/(\d+)\s*mois/)?.[1]) || 3;
+
+    // Parse budget hints
+    let budgetHint = parseInt((msg.match(/(\d+)\s*k/)?.[1] || '0')) * 1000;
+    if (!budgetHint) budgetHint = parseInt(msg.match(/budget\s*(\d[\d\s]*)/)?.[1]?.replace(/\s/g,'') || '0');
+
+    // Build roles based on levers
+    const rolesCatalog = {
+      'Head of Growth':  { setup: 0, monthly: 2500 },
+      'SEO Expert':      { setup: 0, monthly: 1800 },
+      'Paid Manager':    { setup: 0, monthly: 2000 },
+      'Content Manager': { setup: 0, monthly: 1500 },
+      'Designer':        { setup: 0, monthly: 900  },
+      'GTM Engineer':    { setup: 1500, monthly: 0  },
+      'Outbound Manager':{ setup: 0, monthly: 1600 },
+    };
+
+    let selectedRoles = ['Head of Growth', 'Designer', 'GTM Engineer'];
+    if (levers.includes('SEO')) selectedRoles.splice(1, 0, 'SEO Expert');
+    if (levers.some(l => l.includes('Ads'))) selectedRoles.splice(1, 0, 'Paid Manager');
+    if (levers.includes('Content') || msg.includes('content')) selectedRoles.splice(-1, 0, 'Content Manager');
+    if (msg.includes('outbound')) selectedRoles.splice(-1, 0, 'Outbound Manager');
+
+    // Adjust if user mentions specific roles
+    if (msg.includes('sans designer') || msg.includes('pas de designer')) selectedRoles = selectedRoles.filter(r => r !== 'Designer');
+    if (msg.includes('sans gtm') || msg.includes('pas de gtm')) selectedRoles = selectedRoles.filter(r => r !== 'GTM Engineer');
+
+    // Scale prices if budget hint given
+    let scale = 1;
+    if (budgetHint > 0) {
+      const baseTotal = selectedRoles.reduce((s, r) => s + (rolesCatalog[r].monthly * months) + rolesCatalog[r].setup, 0);
+      if (baseTotal > 0) scale = Math.max(0.5, Math.min(2.5, budgetHint / baseTotal));
+    }
+
+    // Handle adjustment requests from follow-up messages
+    if (prevHistory.length > 0) {
+      if (msg.includes('moins cher') || msg.includes('réduire') || msg.includes('baisser')) scale *= 0.75;
+      if (msg.includes('plus cher') || msg.includes('augmenter') || msg.includes('premium')) scale *= 1.3;
+      if (msg.match(/(\d+)\s*€.*mois.*head/i)) {
+        const custom = parseInt(msg.match(/(\d+)\s*€/)[1]);
+        rolesCatalog['Head of Growth'].monthly = custom;
+      }
+    }
+
+    const fmt = n => n.toLocaleString('fr-FR');
+    const roles = selectedRoles.map(name => {
+      const cat = rolesCatalog[name];
+      const setup = Math.round(cat.setup * scale / 100) * 100;
+      const monthly = Math.round(cat.monthly * scale / 100) * 100;
+      const subtotal = setup + monthly * months;
+      return {
+        name,
+        setup: setup > 0 ? `${fmt(setup)} € HT` : '—',
+        monthly: monthly > 0 ? `${fmt(monthly)} € HT` : '—',
+        subtotal: `${fmt(subtotal)} € HT`,
+        _total: subtotal,
+      };
+    });
+    const total = roles.reduce((s, r) => s + r._total, 0);
+
+    const table = roles.map(r => `| ${r.name} | ${r.setup} | ${r.monthly} | ${r.subtotal} |`).join('\n');
+    const mediaRec = Math.max(2000, Math.round(total * 0.15 / 100) * 100);
+
+    let commentary = '';
+    if (prevHistory.length === 0) {
+      commentary = `\nCette proposition est basée sur les leviers actifs (${levers.join(', ')}) et un engagement de ${months} mois.\n\nVous pouvez me demander :\n- "Réduis le budget de 20%"\n- "Ajoute un Content Manager"\n- "Passe à 6 mois"\n- "Sans GTM Engineer"\n- "Budget total 20K"`;
+    } else {
+      commentary = `\n_Proposition ajustée selon votre demande. Continuez à affiner._`;
+    }
+
+    res.json({
+      response: `## Proposition de pricing — ${pres.client_name}\n\n**${months > 3 ? `Phase 1 : Growth Plan — ${months} mois` : 'Phase 1 : Growth Plan — 3 mois'}**\n\n| Rôle | Setup | Run / mois | Sous-total (${months} mois) |\n|------|-------|-----------|---------------------|\n${table}\n| **TOTAL** | | | **${fmt(total)} € HT** |\n\n**Budget média recommandé :** ${fmt(mediaRec)} € / mois minimum\n**Engagement :** 3 mois fermes puis reconductible\n**Leviers couverts :** ${levers.join(', ')}${commentary}`,
+      pricing: `${fmt(total)} € HT`,
+    });
+  } catch (err) { next(err); }
+});
+
 // PUT /api/presentations/:id/analyses/:lever — upsert analysis
 router.put('/:id/analyses/:lever', async (req, res, next) => {
   try {
@@ -298,7 +513,7 @@ function formatPresentationList(row) {
     canvaUrl: row.canva_url,
     claapUrl: row.claap_url,
     preAuditUrl: row.pre_audit_url,
-    activeLevers: row.active_levers,
+    activeLevers: typeof row.active_levers === 'string' ? JSON.parse(row.active_levers || '[]') : (row.active_levers || []),
     pricing: row.pricing,
     dateR1: row.date_r1,
     dateR2: row.date_r2,

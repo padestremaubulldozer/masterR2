@@ -371,6 +371,21 @@ function App() {
   const [toast, setToast] = useState(null);
   const [search, setSearch] = useState('');
   const [recentPres, setRecentPres] = useState([]);
+  const [mcpStatus, setMcpStatus] = useState({});
+  const [mcpTesting, setMcpTesting] = useState({});
+
+  async function testMcp(toolId) {
+    setMcpTesting(prev => ({...prev, [toolId]: true}));
+    try {
+      const res = await fetch(`/api/settings/mcp/${toolId}/test`);
+      const data = await res.json();
+      setMcpStatus(prev => ({...prev, [toolId]: data}));
+      showToast(`${toolId}: ${data.message}`);
+    } catch {
+      setMcpStatus(prev => ({...prev, [toolId]: {status:'unreachable', message:'Erreur réseau'}}));
+    }
+    setMcpTesting(prev => ({...prev, [toolId]: false}));
+  }
 
   /* Affiche un message toast pendant 2 secondes puis le masque automatiquement.
      Mémorisé avec useCallback pour éviter les re-créations inutiles. */
@@ -666,11 +681,24 @@ function App() {
                 <div key={tool.id} className={`mcp-card${settings.mcps[tool.id]?' on':''}`}>
                   <div className="mcp-icon">{tool.logo?<img src={tool.logo} alt={tool.name}/>:tool.icon}</div>
                   <div className="mcp-info">
-                    <div className="mcp-name">{tool.name}</div>
+                    <div className="mcp-name">{tool.name}
+                      {mcpStatus[tool.id] && (
+                        <span style={{marginLeft:8,fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:4,
+                          background:mcpStatus[tool.id].status==='reachable'?'rgba(50,215,75,0.15)':'rgba(255,68,68,0.15)',
+                          color:mcpStatus[tool.id].status==='reachable'?'#32D74B':'#ff4444'}}>
+                          {mcpStatus[tool.id].status==='reachable'?'Connecté':'Non joignable'}
+                        </span>
+                      )}
+                    </div>
                     <div className="mcp-desc">{tool.desc}</div>
                     <div className="mcp-cat">{tool.category}</div>
                   </div>
-                  {/* Toggle on/off — met à jour settings.mcps[tool.id] */}
+                  <button onClick={()=>testMcp(tool.id)} disabled={mcpTesting[tool.id]}
+                    style={{background:'transparent',border:'1px solid var(--border)',borderRadius:6,padding:'6px 12px',
+                    fontSize:12,fontWeight:600,color:'var(--text-2)',cursor:'pointer',whiteSpace:'nowrap',flexShrink:0,
+                    opacity:mcpTesting[tool.id]?0.5:1}}>
+                    {mcpTesting[tool.id]?'Test...':'Tester'}
+                  </button>
                   <Toggle on={settings.mcps[tool.id]} onChange={()=>toggleMcp(tool.id)} />
                 </div>
               ))}
@@ -683,10 +711,24 @@ function App() {
                 <div key={tool.id} className={`mcp-card${settings.mcps[tool.id]?' on':''}`}>
                   <div className="mcp-icon">{tool.logo?<img src={tool.logo} alt={tool.name}/>:tool.icon}</div>
                   <div className="mcp-info">
-                    <div className="mcp-name">{tool.name}</div>
-                    <div className="mcp-desc">{tool.desc}</div>
+                    <div className="mcp-name">{tool.name}
+                      {mcpStatus[tool.id] && (
+                        <span style={{marginLeft:8,fontSize:11,fontWeight:600,padding:'2px 8px',borderRadius:4,
+                          background:mcpStatus[tool.id].status==='reachable'?'rgba(50,215,75,0.15)':'rgba(255,68,68,0.15)',
+                          color:mcpStatus[tool.id].status==='reachable'?'#32D74B':'#ff4444'}}>
+                          {mcpStatus[tool.id].status==='reachable'?'Connecté':'Non joignable'}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mcp-desc">{tool.desc} <span style={{fontSize:12,color:'var(--text-3)'}}>— remplace {tool.altFor}</span></div>
                     <div className="mcp-cat">{tool.category}</div>
                   </div>
+                  <button onClick={()=>testMcp(tool.id)} disabled={mcpTesting[tool.id]}
+                    style={{background:'transparent',border:'1px solid var(--border)',borderRadius:6,padding:'6px 12px',
+                    fontSize:12,fontWeight:600,color:'var(--text-2)',cursor:'pointer',whiteSpace:'nowrap',flexShrink:0,
+                    opacity:mcpTesting[tool.id]?0.5:1}}>
+                    {mcpTesting[tool.id]?'Test...':'Tester'}
+                  </button>
                   <Toggle on={settings.mcps[tool.id]} onChange={()=>toggleMcp(tool.id)} />
                 </div>
               ))}
