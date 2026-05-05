@@ -2,3 +2,4 @@
 back/data/
 *.sqlite3
 .env
+front/*.pdf
